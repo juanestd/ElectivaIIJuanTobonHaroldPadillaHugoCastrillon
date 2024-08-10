@@ -40,11 +40,18 @@ Abrir [http://localhost:3000](http://localhost:3000) para ver en el navegador.
 
 ### POST: 
 /api/:username/posts
+{
+"message":"ejemplo"
+}
 ### GET
 /api/:username/posts
 /api/:username/posts/:id_post
 ### PUT
 /api/:username/posts/
+{
+"id":1, 
+"message":"ejemplo"
+}
 ### DELETE
 /api/:username/posts/:id_post
 
