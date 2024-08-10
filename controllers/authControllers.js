@@ -17,7 +17,7 @@ const loginUser = (req, res) => {
     const user = users.find(user => user.username === username && user.password === password);
 
     if (user) {
-        res.status(200).json({status: "ok" ,message: "Login successful", user });
+        res.status(200).json({status: "ok", message: "Login successful", user });
     } else {
         res.status(401).json({status: "error", message: "Invalid credentials" });
     }

@@ -12,7 +12,7 @@ const {
   updatePost,
   deletePost,
 } = require("../controllers/postsControllers");
-const {
+ const {
   getFollowers,
   getFollowerById,
   createFollower,
