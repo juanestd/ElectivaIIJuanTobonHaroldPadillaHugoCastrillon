@@ -8,11 +8,12 @@ const {
   deleteFollower,
   countFollowers,
 } = require("../controllers/followersControllers");
+const { validateFollowerCreation, validateFollowerUpdate } = require("../middlewares/middlewareFollower");
 
 router.get('/:username/followers/', getFollowers);
 router.get('/:username/followers/:id_follower', getFollowerById);
-router.post('/:username/followers/', createFollower);
-router.put('/:username/followers/', updateFollower);
+router.post('/:username/followers/', validateFollowerCreation, createFollower);
+router.put('/:username/followers/', validateFollowerUpdate, updateFollower);
 router.delete('/:username/followers/:id_follower', deleteFollower);
 router.get('/:username/followers/counts/', countFollowers);
 

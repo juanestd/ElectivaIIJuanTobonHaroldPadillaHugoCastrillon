@@ -10,10 +10,6 @@ const registerUser = (req, res) => {
 const loginUser = (req, res) => {
     const { username, password } = req.body;
 
-    if (!username || !password) {
-        return res.status(400).json({status: "error", message: "Username and password are required" });
-    }
-
     const user = users.find(user => user.username === username && user.password === password);
 
     if (user) {

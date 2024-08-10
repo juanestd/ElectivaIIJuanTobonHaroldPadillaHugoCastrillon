@@ -9,6 +9,12 @@ const users = [
         username: "user2",
         password: "password2"
     }
+    ,
+    {
+        id: 3,
+        username: "user3",
+        password: "password3"
+    }
 ];
 
 module.exports = users;
