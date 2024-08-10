@@ -26,3 +26,55 @@ Correr la app en modo desarrollador
 
 ### `npm run dev`
 Abrir [http://localhost:3000](http://localhost:3000) para ver en el navegador.
+
+# Listado de endpoints
+
+## Auth
+
+### POST: 
+
+/api/auth/register
+/api/auth/login
+
+## Posts
+
+### POST: 
+/api/:username/posts
+### GET
+/api/:username/posts
+/api/:username/posts/:id_post
+### PUT
+/api/:username/posts/
+### DELETE
+/api/:username/posts/:id_post
+
+## Followers
+
+### POST: 
+
+/api/:username/followers
+### GET
+/api/:username/followers
+/api/:username/followers/:id_followers
+### PUT
+/api/:username/followers/
+### DELETE
+/api/:username/followers/:id_followers
+
+## Following
+
+### POST: 
+/api/:username/following
+### GET
+/api/:username/following
+/api/:username/following/:id_following
+### PUT
+/api/:username/following/
+### DELETE
+/api/:username/following/:id_following
+
+
+
+
+
+
