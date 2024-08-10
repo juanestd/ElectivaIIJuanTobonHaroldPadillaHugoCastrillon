@@ -8,7 +8,7 @@
 
 ## Tecnología
 - <NodeJs ^20.11.1>
-- <express 4.19.2>
+- <express ^4.19.2>
 
 # Trabajo 1 Electiva II (Clon de X)
 
