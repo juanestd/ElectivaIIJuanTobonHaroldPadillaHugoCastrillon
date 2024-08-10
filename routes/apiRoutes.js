@@ -34,26 +34,26 @@ router.post('/register', registerUser);
 router.post('/login', loginUser);
 
 // Routes for posts
-router.get('/posts/:username/', getPosts);
-router.get('/posts/:username/:id_post', getPostById);
-router.post('/posts/:username/', createPost);
-router.put('/posts/:username/', updatePost);
-router.delete('/posts/:username/:id_post', deletePost);
+router.get('/:username/posts/', getPosts);
+router.get('/:username/posts/:id_post', getPostById);
+router.post('/:username/posts/', createPost);
+router.put('/:username/posts/', updatePost);
+router.delete('/:username/posts/:id_post', deletePost);
 
 // Routes for followers
-router.get('/followers/:username/', getFollowers);
-router.get('/followers/:username/:id_follower', getFollowerById);
-router.post('/followers/:username/', createFollower);
-router.put('/followers/:username/', updateFollower);
-router.delete('/followers/:username/:id_follower', deleteFollower);
-router.get('/followers/:username/counts/', countFollowers);
+router.get('/:username/followers/', getFollowers);
+router.get('/:username/followers/:id_follower', getFollowerById);
+router.post('/:username/followers/', createFollower);
+router.put('/:username/followers/', updateFollower);
+router.delete('/:username/followers/:id_follower', deleteFollower);
+router.get('/:username/followers/counts/', countFollowers);
 
 // Routes for following
-router.get('/following/:username/', getFollowings);
-router.get('/following/:username/:id_following', getFollowingById);
-router.get('/following/:username/counts/', countFollowings);
-router.post('/following/:username/', createFollowing);
-router.put('/following/:username/', updateFollowing);
-router.delete('/following/:username/:id_following', deleteFollowing);
+router.get('/:username/following/', getFollowings);
+router.get('/:username/following/:id_following', getFollowingById);
+router.get('/:username/following/counts/', countFollowings);
+router.post('/:username/following/', createFollowing);
+router.put('/:username/following/', updateFollowing);
+router.delete('/:username/following/:id_following', deleteFollowing);
 
 module.exports = router;
