@@ -19,14 +19,14 @@ const getPostById = (req, res) => {
 const createPost = (req, res) => {
     const { username } = req.params;
     const { message } = req.body;
-    const newPost = { id: new Date().getMilliseconds(), username, title, body };
+    const newPost = { id: new Date().getMilliseconds(), username, username, message };
     posts.push(newPost);
     res.status(201).json(newPost);
 };
 
 const updatePost = (req, res) => {
-    const { id_post } = req.body;
-    const post = posts.find(post => post.id === parseInt(id_post));
+    const { id } = req.body;
+    const post = posts.find(post => post.id === parseInt(id));
     if (post) {
         post.message = req.body.message || post.message;
         res.json(post);
