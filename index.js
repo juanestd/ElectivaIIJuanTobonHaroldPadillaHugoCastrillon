@@ -1,12 +1,3 @@
-const express = require("express");
-const app = express();
-const port = 3000;
+const startServer = require('./src/infrastructure/express/Server');
 
-const router = require('./routes/apiRoutes');
-
-app.use(express.json());
-app.use('/api', router);
-    
-app.listen(port, () => {
-    console.log(`this app listening to ${port}`);
-});
+startServer(3000);

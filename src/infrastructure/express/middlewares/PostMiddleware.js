@@ -1,23 +1,16 @@
-const posts = require('../mocks/postMocks');
-
 const validatePostCreation = (req, res, next) => {
-    const { username } = req.params;
     const { message } = req.body;
-
-    if (!username || !message) {
-        return res.status(400).json({ status: "error", message: "Username and message are required" });
+    if (!message) {
+        return res.status(400).json({ status: "error", message: "Message is required" });
     }
-
     next();
 };
 
 const validatePostUpdate = (req, res, next) => {
-    const { id, message } = req.body;
-
-    if (!id || !message) {
+    const { id_post, message } = req.body;
+    if (!id_post || !message) {
         return res.status(400).json({ status: "error", message: "Post ID and message are required" });
     }
-
     next();
 };
 

@@ -1,4 +1,4 @@
-const users = require('../mocks/authMocks');
+const users = require('../../../test/mocks/authMocks');
 
 const validateRegister = (req, res, next) => {
     const { username, password } = req.body;
