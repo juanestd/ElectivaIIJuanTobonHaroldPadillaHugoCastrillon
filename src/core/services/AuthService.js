@@ -4,6 +4,7 @@ class AuthService {
     }
 
     async registerUser(user) {
+        
         return await this.userRepository.save(user);
     }
 

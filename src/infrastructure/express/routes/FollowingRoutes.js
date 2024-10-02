@@ -5,7 +5,6 @@ const { validateFollowingCreation, validateFollowingUpdate } = require("../middl
 const FollowingService = require("../../../core/services/FollowingService");
 const FollowingRepository = require("../../../adapters/repositories/FollowingRepository");
 
-// Instanciar el servicio y el controlador
 const followingService = new FollowingService(new FollowingRepository());
 const followingController = new FollowingController(followingService);
 

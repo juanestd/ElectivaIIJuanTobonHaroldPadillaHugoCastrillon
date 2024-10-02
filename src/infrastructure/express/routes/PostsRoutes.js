@@ -5,7 +5,6 @@ const { validatePostCreation, validatePostUpdate } = require("../middlewares/Pos
 const PostService = require("../../../core/services/PostService");
 const PostRepository = require("../../../adapters/repositories/PostRepository");
 
-// Instancia de los servicios y controladores
 const postService = new PostService(new PostRepository());
 const postController = new PostController(postService);
 
