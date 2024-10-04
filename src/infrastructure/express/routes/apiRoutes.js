@@ -1,14 +1,12 @@
 const express = require('express');
 const router = express.Router();
 
-const AuthRoutes = require('./authRoutes');
-const followerRoutes = require('./followersRoutes');
-const followingRoutes = require('./FollowingRoutes');
-const postRoutes = require('./PostsRoutes');
+const UserRoutes = require('./UserRoutes');
+const FollowRoutes = require('./FollowRoutes');
+const TweetRoutes = require('./tweetRoutes');
 
-router.use(AuthRoutes);
-router.use(followerRoutes);
-router.use(followingRoutes);
-router.use(postRoutes);
+router.use(UserRoutes);
+router.use(FollowRoutes);
+router.use(TweetRoutes);
 
 module.exports = router;

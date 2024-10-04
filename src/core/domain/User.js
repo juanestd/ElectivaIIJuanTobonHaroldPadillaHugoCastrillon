@@ -1,7 +1,21 @@
-class User {
-    constructor(id, username, password) {
-        this.id = id;
+const BaseDomainModel = require('./common/baseDomainModel');
+
+class User extends BaseDomainModel {
+    constructor
+        (
+            { id,
+                createdDate,
+                createdBy,
+                lastModifiedDate,
+                lastModifiedBy, username,
+                email,
+                name,
+                password
+            }) {
+        super({ id, createdDate, createdBy, lastModifiedDate, lastModifiedBy });
         this.username = username;
+        this.email = email;
+        this.name = name;
         this.password = password;
     }
 }

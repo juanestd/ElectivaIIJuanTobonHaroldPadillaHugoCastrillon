@@ -1,26 +1,24 @@
-const users = require('../../../test/mocks/authMocks');
+const jwtAuthService = require('../../services/JwtAuthService');
+const tokenBlacklist = new Set();
 
-const validateRegister = (req, res, next) => {
-    const { username, password } = req.body;
-
-    if (!username || !password) {
-        return res.status(400).json({ status: "error", message: "Username and password are required" });
+const authMiddleware = (authService, tokenBlacklist) => async (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+        return res.status(401).json({ message: 'Authorization header is missing' });
     }
 
-    next();
-};
-
-const validateLogin = (req, res, next) => {
-    const { username, password } = req.body;
-
-    if (!username || !password) {
-        return res.status(400).json({ status: "error", message: "Username and password are required" });
+    const token = authHeader.split(' ')[1];
+    if (tokenBlacklist.has(token)) {
+        return res.status(401).json({ message: 'Token has been revoked' });
     }
 
-    next();
+    try {
+        const user = await authService.verifyToken(token);
+        req.user = user;
+        next();
+    } catch (error) {
+        res.status(401).json({ message: 'Invalid token' });
+    }
 };
 
-module.exports = {
-    validateRegister,
-    validateLogin
-};
+module.exports = { authMiddleware, tokenBlacklist };
