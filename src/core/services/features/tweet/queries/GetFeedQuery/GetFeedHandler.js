@@ -11,7 +11,7 @@ class GetFeedHandler {
             const { userId, page, limit } = query;
 
             const followedUsers = await this.followRepository.getFollowingUserIds(userId);
-            console.log(followedUsers);
+
             const userIds = followedUsers.map(id => id.toString());
 
             userIds.push(userId);

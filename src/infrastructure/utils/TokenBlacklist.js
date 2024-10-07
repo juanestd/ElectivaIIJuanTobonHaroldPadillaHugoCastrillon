@@ -1,8 +1,5 @@
-const ITokenBlacklist = require('../../core/services/contracts/ITokenBlacklist');
-
-class TokenBlacklist extends ITokenBlacklist {
+class TokenBlacklist {
     constructor() {
-        super();
         this.blacklist = new Set();
     }
 

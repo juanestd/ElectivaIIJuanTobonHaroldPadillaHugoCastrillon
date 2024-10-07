@@ -73,7 +73,6 @@ class UserController {
             if (error.message.includes('username') || error.message.includes('email')) {
                 return res.status(400).json({ message: error.message });
             }
-            console.error('Error registering user:', error);
             res.status(500).json({ message: 'An error occurred while registering the user' });
         }
     }
@@ -105,9 +104,6 @@ class UserController {
             const userId = req.user.id;
             const query = new GetAuthenticatedUserQuery(userId);
             const user = await this.getAuthenticatedUserHandler.handle(query);
-            if (!user) {
-                return res.status(404).json({ message: 'User not found' });
-            }
             res.status(200).json(user);
         } catch (error) {
             res.status(401).json({ message: error.message });

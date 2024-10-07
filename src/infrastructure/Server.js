@@ -10,17 +10,19 @@ const userRepository = new UserRepository();
 const authService = new JwtAuthService('your-secret-key', '1h', userRepository);
 const tokenBlacklist = new TokenBlacklist();
 
-const router = require('./express/routes/ApiRoutes')({ authService, tokenBlacklist });
-
 const app = express();
 app.use(express.json());
+
+const router = require('./express/routes/ApiRoutes')({ authService, tokenBlacklist });
+
 app.use('/api', router);
 app.use(errorHandler);
 
 const startServer = (port) => {
     connectDB();
-    app.listen(port, () => console.log(`Server running on port ${port}`));
+    const server = app.listen(port, () => console.log(`Server running on port ${port}`));
     swaggerDocs(app, port);
+    return server;
 };
 
-module.exports = startServer;
+module.exports = { startServer, app };

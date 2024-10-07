@@ -1,10 +1,8 @@
 const bcrypt = require('bcrypt');
-const IAuthService = require('../../core/services/contracts/IAuthService');
 const jwt = require('jsonwebtoken');
 
-class JwtAuthService extends IAuthService {
+class JwtAuthService {
     constructor(secretKey, expiresIn, userRepository) {
-        super();
         this.secretKey = secretKey;
         this.expiresIn = expiresIn;
         this.userRepository = userRepository;

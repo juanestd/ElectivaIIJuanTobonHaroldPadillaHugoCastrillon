@@ -7,7 +7,7 @@ const authMiddleware = (authService, tokenBlacklist) => {
     return async (req, res, next) => {
         const authHeader = req.headers.authorization;
         if (!authHeader) {
-            return res.status(401).json({ message: 'Authorization header is missing' });
+            return res.status(400).json({ message: 'Authorization header missing' });
         }
 
         const token = authHeader.split(' ')[1];
@@ -21,7 +21,7 @@ const authMiddleware = (authService, tokenBlacklist) => {
             req.user = decodedToken;
             next();
         } catch (error) {
-            res.status(401).json({ message: 'Invalid token' });
+            return res.status(401).json({ message: 'Invalid token' });
         }
     };
 };

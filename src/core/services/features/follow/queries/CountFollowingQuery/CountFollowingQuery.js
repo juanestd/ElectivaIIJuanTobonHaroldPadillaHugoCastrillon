@@ -1,6 +1,6 @@
 class CountFollowingQuery {
-    constructor(userId) {
-        this.userId = userId;
+    constructor(username) {
+        this.username = username;
     }
 }
 

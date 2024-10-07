@@ -5,6 +5,12 @@ const GetTweetByIdQuery = require('../../core/services/features/tweet/queries/Ge
 const GetTweetsByUsernameQuery = require('../../core/services/features/tweet/queries/GetTweetsByUsernameQuery/GetTweetsByUsernameQuery');
 const GetFeedQuery = require('../../core/services/features/tweet/queries/GetFeedQuery/GetFeedQuery');
 
+/**
+ * @swagger
+ * tags:
+ *   name: Tweets
+ *   description: Tweets de los usuarios
+ */
 class TweetController {
     constructor(
         createTweetHandler,
@@ -24,54 +30,13 @@ class TweetController {
 
     /**
      * @swagger
-     * tags:
-     *   name: Tweet
-     *   description: Endpoints para operaciones de tweets
-     *
-     * components:
-     *   schemas:
-     *     Tweet:
-     *       type: object
-     *       properties:
-     *         id:
-     *           type: string
-     *           description: ID del tweet
-     *         message:
-     *           type: string
-     *           description: Contenido del tweet
-     *         createdDate:
-     *           type: string
-     *           format: date-time
-     *           description: Fecha de creación del tweet
-     *         createdBy:
-     *           type: object
-     *           properties:
-     *             id:
-     *               type: string
-     *               description: ID del usuario
-     *             name:
-     *               type: string
-     *               description: Nombre del usuario
-     *             username:
-     *               type: string
-     *               description: Nombre de usuario
-     *       example:
-     *         id: "60d21b4667d0d8992e610c85"
-     *         message: "Este es un tweet de prueba"
-     *         createdDate: "2023-07-01T12:34:56.789Z"
-     *         createdBy:
-     *           id: "60d0fe4f5311236168a109ca"
-     *           name: "Juan Pérez"
-     *           username: "juanperez"
-     */
-
-    /**
-     * @swagger
      * /{username}/tweets:
      *   get:
      *     summary: Obtener los tweets de un usuario específico con paginación
      *     tags:
      *       - Tweet
+     *     security:
+     *       - bearerAuth: []
      *     parameters:
      *       - in: path
      *         name: username
@@ -119,10 +84,11 @@ class TweetController {
     async getTweets(req, res) {
         try {
             const username = req.params.username;
+            const myUserId = req.user.id;
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 10;
 
-            const query = new GetTweetsByUsernameQuery(username, page, limit);
+            const query = new GetTweetsByUsernameQuery(myUserId, username, page, limit);
             const tweets = await this.getTweetsByUsernameHandler.handle(query);
 
             res.status(200).json(tweets);
@@ -138,6 +104,8 @@ class TweetController {
      *     summary: Obtener un tweet por su ID
      *     tags:
      *       - Tweet
+     *     security:
+     *       - bearerAuth: []
      *     parameters:
      *       - in: path
      *         name: id_tweet
@@ -223,7 +191,7 @@ class TweetController {
 
             res.status(201).json({ message: 'Tweet published successfully', tweet });
         } catch (error) {
-            res.status(400).json({ message: error.message });
+            res.status(401).json({ message: error.message });
         }
     }
 
@@ -286,9 +254,12 @@ class TweetController {
             const command = new UpdateTweetCommand(id_tweet, message);
             const updatedTweet = await this.updateTweetHandler.handle(command);
 
-            res.status(200).json({ message: 'Tweet updated successfully', updatedTweet });
+            !updatedTweet ?
+                res.status(404).json({ message: 'Tweet not found' })
+                :
+                res.status(200).json({ message: 'Tweet updated successfully', updatedTweet });
         } catch (error) {
-            res.status(400).json({ message: error.message });
+            res.status(401).json({ message: error.message });
         }
     }
 

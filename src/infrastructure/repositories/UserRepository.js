@@ -1,8 +1,7 @@
-const IUserRepository = require('../../core/services/contracts/IUserRepository');
 const { UserModel } = require('../database/models/userModel');
 const UserMapper = require('../../core/services/mapping/UserMapper');
 
-class UserRepository extends IUserRepository {
+class UserRepository {
     async create(user) {
         try {
             const existingUser = await UserModel.findOne({
@@ -26,23 +25,6 @@ class UserRepository extends IUserRepository {
         try {
             const userDocument = await UserModel.findById(id);
             return userDocument ? UserMapper.toDomain(userDocument) : null;
-        } catch (error) {
-            throw error;
-        }
-    }
-
-    async update(id, user) {
-        try {
-            const updatedUser = await UserModel.findByIdAndUpdate(id, UserMapper.toPersistence(user), { new: true });
-            return updatedUser ? UserMapper.toDomain(updatedUser) : null;
-        } catch (error) {
-            throw error;
-        }
-    }
-
-    async delete(id) {
-        try {
-            await UserModel.findByIdAndDelete(id);
         } catch (error) {
             throw error;
         }

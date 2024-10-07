@@ -2,10 +2,10 @@ const express = require("express");
 const FollowController = require("../../../adapters/controllers/FollowController");
 const FollowRepository = require("../../../infrastructure/repositories/FollowRepository");
 const UserRepository = require("../../../infrastructure/repositories/UserRepository");
-const { validateFollowerId, validateFollowingId, validateUserId, validateUsername } = require('../middlewares/FollowMiddleware');
+const { validateFollowingId, validateUsername } = require('../middlewares/FollowMiddleware');
 const { authMiddleware } = require('../middlewares/AuthMiddleware');
 const FollowUserHandler = require("../../../core/services/features/follow/commands/FollowUserCommand/FollowUserHandler");
-const FollowByUsernameHandler = require("../../../core/services/features/follow/commands/FollowByUsernameCommand/FollowByUsernameCommand");
+const FollowByUsernameHandler = require("../../../core/services/features/follow/commands/FollowByUsernameCommand/FollowByUsernameHandler");
 const CountFollowersHandler = require("../../../core/services/features/follow/queries/CountFollowersQuery/CountFollowersHandler");
 const CountFollowingHandler = require("../../../core/services/features/follow/queries/CountFollowingQuery/CountFollowingHandler");
 const GetFollowersHandler = require("../../../core/services/features/follow/queries/GetFollowersQuery/GetFollowersHandler");
@@ -19,10 +19,10 @@ module.exports = ({ authService, tokenBlacklist }) => {
 
     const followUserHandler = new FollowUserHandler(followRepository);
     const followByUsernameHandler = new FollowByUsernameHandler(userRepository, followRepository);
-    const countFollowersHandler = new CountFollowersHandler(followRepository);
-    const countFollowingHandler = new CountFollowingHandler(followRepository);
-    const getFollowersHandler = new GetFollowersHandler(followRepository);
-    const getFollowingHandler = new GetFollowingHandler(followRepository);
+    const countFollowersHandler = new CountFollowersHandler(followRepository, userRepository);
+    const countFollowingHandler = new CountFollowingHandler(followRepository, userRepository);
+    const getFollowersHandler = new GetFollowersHandler(followRepository, userRepository);
+    const getFollowingHandler = new GetFollowingHandler(followRepository, userRepository);
 
     const followController = new FollowController(
         followUserHandler,
@@ -34,7 +34,7 @@ module.exports = ({ authService, tokenBlacklist }) => {
     );
 
     router.post(
-        '/follow/by-username',
+        '/:username/follow',
         authMiddleware(authService, tokenBlacklist),
         validateUsername,
         (req, res) => {
@@ -52,36 +52,36 @@ module.exports = ({ authService, tokenBlacklist }) => {
     );
 
     router.get(
-        '/:userId/followers/count',
+        '/:username/followers/count',
         authMiddleware(authService, tokenBlacklist),
-        validateUserId,
+        validateUsername,
         (req, res) => {
             followController.getFollowerCount(req, res);
         }
     );
 
     router.get(
-        '/:userId/following/count',
+        '/:username/following/count',
         authMiddleware(authService, tokenBlacklist),
-        validateUserId,
+        validateUsername,
         (req, res) => {
             followController.getFollowingCount(req, res);
         }
     );
 
     router.get(
-        '/:userId/followers',
+        '/:username/followers',
         authMiddleware(authService, tokenBlacklist),
-        validateUserId,
+        validateUsername,
         (req, res) => {
             followController.getFollowers(req, res);
         }
     );
 
     router.get(
-        '/:userId/following',
+        '/:username/following',
         authMiddleware(authService, tokenBlacklist),
-        validateUserId,
+        validateUsername,
         (req, res) => {
             followController.getFollowing(req, res);
         }

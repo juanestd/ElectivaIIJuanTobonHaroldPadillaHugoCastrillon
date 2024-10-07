@@ -1,14 +1,16 @@
 class GetFollowersHandler {
-    constructor(followRepository) {
+    constructor(followRepository, userRepository) {
         this.followRepository = followRepository;
+        this.userRepository = userRepository;
     }
 
     async handle(query) {
-        const followers = await this.followRepository.getFollowers(query.userId, query.page, query.limit);
-        return followers.map(f => ({
-            name: f.name,
-            username: f.username
-        }));
+        const user = await this.userRepository.getByUsername(query.username);
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        return await this.followRepository.getFollowers(query.myUserId ,user.id, query.page, query.limit);
     }
 }
 

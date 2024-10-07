@@ -1,8 +1,7 @@
-const ITweetRepository = require('../../core/services/contracts/ITweetRepository');
 const { TweetModel } = require('../database/models/TweetModel');
 const TweetMapper = require('../../core/services/mapping/TweetMapper');
 
-class TweetRepository extends ITweetRepository {
+class TweetRepository{
     async createTweet(tweetData) {
         const tweetDocument = new TweetModel(TweetMapper.toPersistence(tweetData));
         const savedTweet = await tweetDocument.save();

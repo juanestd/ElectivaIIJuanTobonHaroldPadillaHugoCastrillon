@@ -5,7 +5,6 @@ const CountFollowingQuery = require('../../core/services/features/follow/queries
 const GetFollowersQuery = require('../../core/services/features/follow/queries/GetFollowersQuery/GetFollowersQuery');
 const GetFollowingQuery = require('../../core/services/features/follow/queries/GetFollowingQuery/GetFollowingQuery');
 
-
 /**
  * @swagger
  * tags:
@@ -78,24 +77,19 @@ class FollowController {
 
     /**
      * @swagger
-     * /follow/by-username:
+     * /{username}/follow:
      *   post:
      *     summary: Seguir a un usuario por su nombre de usuario
      *     tags: [Follow]
      *     security:
      *       - bearerAuth: []
-     *     requestBody:
-     *       required: true
-     *       content:
-     *         application/json:
-     *           schema:
-     *             type: object
-     *             required:
-     *               - username
-     *             properties:
-     *               username:
-     *                 type: string
-     *                 description: Nombre de usuario a seguir
+     *     parameters:
+     *       - in: path
+     *         name: username
+     *         required: true
+     *         schema:
+     *           type: string
+     *         description: username del usuario
      *     responses:
      *       201:
      *         description: Usuario seguido exitosamente
@@ -109,7 +103,7 @@ class FollowController {
     async followByUsername(req, res) {
         try {
             const followerId = req.user.id;
-            const { username } = req.body;
+            const { username } = req.params;
             const command = new FollowByUsernameCommand(followerId, username);
             const result = await this.followByUsernameHandler.handle(command);
             if (result) {
@@ -128,7 +122,7 @@ class FollowController {
 
     /**
      * @swagger
-     * /{userId}/followers/count:
+     * /{username}/followers/count:
      *   get:
      *     summary: Obtener el conteo de seguidores de un usuario
      *     tags: [Follow]
@@ -136,11 +130,11 @@ class FollowController {
      *       - bearerAuth: []
      *     parameters:
      *       - in: path
-     *         name: userId
+     *         name: username
      *         required: true
      *         schema:
      *           type: string
-     *         description: ID del usuario
+     *         description: username del usuario
      *     responses:
      *       200:
      *         description: Conteo de seguidores
@@ -157,8 +151,8 @@ class FollowController {
      */
     async getFollowerCount(req, res) {
         try {
-            const { userId } = req.params;
-            const query = new CountFollowersQuery(userId);
+            const { username } = req.params;
+            const query = new CountFollowersQuery(username);
             const followersCount = await this.countFollowersHandler.handle(query);
             res.status(200).json({ followers: followersCount });
         } catch (error) {
@@ -168,7 +162,7 @@ class FollowController {
 
     /**
      * @swagger
-     * /{userId}/following/count:
+     * /{username}/following/count:
      *   get:
      *     summary: Obtener el conteo de usuarios que sigue un usuario
      *     tags: [Follow]
@@ -176,11 +170,11 @@ class FollowController {
      *       - bearerAuth: []
      *     parameters:
      *       - in: path
-     *         name: userId
+     *         name: username
      *         required: true
      *         schema:
      *           type: string
-     *         description: ID del usuario
+     *         description: username del usuario
      *     responses:
      *       200:
      *         description: Conteo de usuarios seguidos
@@ -197,8 +191,8 @@ class FollowController {
      */
     async getFollowingCount(req, res) {
         try {
-            const { userId } = req.params;
-            const query = new CountFollowingQuery(userId);
+            const { username } = req.params;
+            const query = new CountFollowingQuery(username);
             const followingCount = await this.countFollowingHandler.handle(query);
             res.status(200).json({ following: followingCount });
         } catch (error) {
@@ -208,7 +202,7 @@ class FollowController {
 
     /**
      * @swagger
-     * /{userId}/followers:
+     * /{username}/followers:
      *   get:
      *     summary: Obtener una lista de seguidores de un usuario
      *     tags: [Follow]
@@ -216,11 +210,11 @@ class FollowController {
      *       - bearerAuth: []
      *     parameters:
      *       - in: path
-     *         name: userId
+     *         name: username
      *         required: true
      *         schema:
      *           type: string
-     *         description: ID del usuario
+     *         description: username del usuario
      *       - in: query
      *         name: page
      *         schema:
@@ -255,12 +249,13 @@ class FollowController {
      */
     async getFollowers(req, res) {
         try {
-            const { userId } = req.params;
+            const { username } = req.params;
+            const myUserId = req.user.id;
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 10;
-            const query = new GetFollowersQuery(userId, page, limit);
+            const query = new GetFollowersQuery(myUserId, username, page, limit);
             const followers = await this.getFollowersHandler.handle(query);
-            res.status(200).json({ followers });
+            res.status(200).json( followers );
         } catch (error) {
             res.status(500).json({ message: 'An error occurred while retrieving followers' });
         }
@@ -268,7 +263,7 @@ class FollowController {
 
     /**
      * @swagger
-     * /{userId}/following:
+     * /{username}/following:
      *   get:
      *     summary: Obtener una lista de usuarios que sigue un usuario
      *     tags: [Follow]
@@ -276,11 +271,11 @@ class FollowController {
      *       - bearerAuth: []
      *     parameters:
      *       - in: path
-     *         name: userId
+     *         name: username
      *         required: true
      *         schema:
      *           type: string
-     *         description: ID del usuario
+     *         description: username del usuario
      *       - in: query
      *         name: page
      *         schema:
@@ -315,12 +310,12 @@ class FollowController {
      */
     async getFollowing(req, res) {
         try {
-            const { userId } = req.params;
+            const { username } = req.params;
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 10;
-            const query = new GetFollowingQuery(userId, page, limit);
+            const query = new GetFollowingQuery(username, page, limit);
             const following = await this.getFollowingHandler.handle(query);
-            res.status(200).json({ following });
+            res.status(200).json( following );
         } catch (error) {
             res.status(500).json({ message: 'An error occurred while retrieving following users' });
         }

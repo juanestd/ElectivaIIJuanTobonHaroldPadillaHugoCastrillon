@@ -28,7 +28,7 @@ module.exports = ({ authService, tokenBlacklist }) => {
     const updateTweetHandler = new UpdateTweetHandler(tweetRepository);
     const deleteTweetHandler = new DeleteTweetHandler(tweetRepository);
     const getTweetByIdHandler = new GetTweetByIdHandler(tweetRepository);
-    const getTweetsByUsernameHandler = new GetTweetsByUsernameHandler(userRepository, tweetRepository);
+    const getTweetsByUsernameHandler = new GetTweetsByUsernameHandler(userRepository, tweetRepository, followRepository);
     const getFeedHandler = new GetFeedHandler(tweetRepository, followRepository);
 
     const tweetController = new TweetController(
@@ -40,8 +40,8 @@ module.exports = ({ authService, tokenBlacklist }) => {
         getFeedHandler
     );
 
-    router.get('/:username/tweets', (req, res) => tweetController.getTweets(req, res));
-    router.get('/tweets/:id_tweet', (req, res) => tweetController.getTweetById(req, res));
+    router.get('/:username/tweets', authMiddleware(authService, tokenBlacklist), (req, res) => tweetController.getTweets(req, res));
+    router.get('/tweets/:id_tweet', authMiddleware(authService, tokenBlacklist), (req, res) => tweetController.getTweetById(req, res));
     router.post('/tweets', authMiddleware(authService, tokenBlacklist), validateTweetCreation, (req, res) => tweetController.createTweet(req, res));
     router.put('/tweets/:id_tweet', authMiddleware(authService, tokenBlacklist), validateTweetUpdate, (req, res) => tweetController.updateTweet(req, res));
     router.delete('/tweets/:id_tweet', authMiddleware(authService, tokenBlacklist), (req, res) => tweetController.deleteTweet(req, res));

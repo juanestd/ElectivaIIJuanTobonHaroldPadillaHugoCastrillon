@@ -1,6 +1,7 @@
 class GetFollowersQuery {
-    constructor(userId, page, limit) {
-        this.userId = userId;
+    constructor(myUserId, username, page, limit) {
+        this.myUserId = myUserId;
+        this.username = username;
         this.page = page;
         this.limit = limit;
     }

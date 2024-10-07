@@ -63,18 +63,11 @@ class AuthController {
      *         description: Sesión cerrada exitosamente
      */
     async logout(req, res) {
-        try {
-            const authHeader = req.headers.authorization;
-            if (!authHeader) {
-                return res.status(400).json({ message: 'Authorization header missing' });
-            }
-            const token = authHeader.split(' ')[1];
-            const command = new LogoutUserCommand(token);
-            const result = await this.logoutUserHandler.handle(command);
-            res.status(200).json(result);
-        } catch (error) {
-            res.status(500).json({ message: error.message });
-        }
+        const token = req.headers.authorization.split(' ')[1];
+        const command = new LogoutUserCommand(token);
+        const result = await this.logoutUserHandler.handle(command);
+
+        return res.status(200).json(result);
     }
 }
 

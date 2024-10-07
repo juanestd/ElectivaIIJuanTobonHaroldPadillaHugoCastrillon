@@ -12,17 +12,14 @@ module.exports = ({ authService, tokenBlacklist }) => {
 
     const userRepository = new UserRepository();
 
-    // Instanciamos los handlers
     const createUserHandler = new CreateUserHandler(userRepository);
     const getAuthenticatedUserHandler = new GetAuthenticatedUserHandler(userRepository);
 
-    // Creamos el controlador de usuario
     const userController = new UserController(
         createUserHandler,
         getAuthenticatedUserHandler
     );
 
-    // Definimos las rutas
     router.post('/auth/register', validateRegister, (req, res) => userController.registerUser(req, res));
     router.get('/me', authMiddleware(authService, tokenBlacklist), (req, res) => userController.getAuthenticatedUser(req, res));
 
