@@ -1,24 +1,29 @@
-const jwtAuthService = require('../../services/JwtAuthService');
-const tokenBlacklist = new Set();
+const VerifyTokenQuery = require('../../../core/services/features/auth/queries/VerifyTokenQuery/VerifyTokenQuery');
+const VerifyTokenHandler = require('../../../core/services/features/auth/queries/VerifyTokenQuery/VerifyTokenHandler');
 
-const authMiddleware = (authService, tokenBlacklist) => async (req, res, next) => {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-        return res.status(401).json({ message: 'Authorization header is missing' });
-    }
+const authMiddleware = (authService, tokenBlacklist) => {
+    const verifyTokenHandler = new VerifyTokenHandler(authService);
 
-    const token = authHeader.split(' ')[1];
-    if (tokenBlacklist.has(token)) {
-        return res.status(401).json({ message: 'Token has been revoked' });
-    }
+    return async (req, res, next) => {
+        const authHeader = req.headers.authorization;
+        if (!authHeader) {
+            return res.status(401).json({ message: 'Authorization header is missing' });
+        }
 
-    try {
-        const user = await authService.verifyToken(token);
-        req.user = user;
-        next();
-    } catch (error) {
-        res.status(401).json({ message: 'Invalid token' });
-    }
+        const token = authHeader.split(' ')[1];
+        if (tokenBlacklist.has(token)) {
+            return res.status(401).json({ message: 'Token has been revoked' });
+        }
+
+        try {
+            const query = new VerifyTokenQuery(token);
+            const decodedToken = await verifyTokenHandler.handle(query);
+            req.user = decodedToken;
+            next();
+        } catch (error) {
+            res.status(401).json({ message: 'Invalid token' });
+        }
+    };
 };
 
-module.exports = { authMiddleware, tokenBlacklist };
+module.exports = { authMiddleware };

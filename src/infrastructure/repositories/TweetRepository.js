@@ -4,85 +4,68 @@ const TweetMapper = require('../../core/services/mapping/TweetMapper');
 
 class TweetRepository extends ITweetRepository {
     async createTweet(tweetData) {
-        try {
-            const tweetDocument = new TweetModel(TweetMapper.toPersistence(tweetData));
-            const savedTweet = await tweetDocument.save();
-            return TweetMapper.toDomain(savedTweet);
-        } catch (error) {
-            throw new Error('Error creating tweet');
-        }
+        const tweetDocument = new TweetModel(TweetMapper.toPersistence(tweetData));
+        const savedTweet = await tweetDocument.save();
+        const populatedTweet = await TweetModel.findById(savedTweet._id)
+            .populate('createdBy', 'name username');
+        return TweetMapper.toDomain(populatedTweet);
     }
 
     async getTweetsByUserId(userId, page = 1, limit = 10) {
-        try {
-            const skip = (page - 1) * limit;
-            const tweets = await TweetModel.find({ createdBy: userId })
-                .sort({ createdDate: -1 })
-                .skip(skip)
-                .limit(limit);
+        const skip = (page - 1) * limit;
+        const tweets = await TweetModel.find({ createdBy: userId })
+            .sort({ createdDate: -1 })
+            .skip(skip)
+            .limit(limit)
+            .populate('createdBy', 'name username');
 
-            const totalTweets = await TweetModel.countDocuments({ createdBy: userId });
-            return {
-                tweets: tweets.map(tweet => TweetMapper.toDomain(tweet)),
-                page,
-                limit,
-                totalPages: Math.ceil(totalTweets / limit),
-                totalTweets,
-            };
-        } catch (error) {
-            throw new Error('Error retrieving tweets with pagination');
-        }
+        const totalTweets = await TweetModel.countDocuments({ createdBy: userId });
+        return {
+            tweets: tweets.map(tweet => TweetMapper.toDomain(tweet)),
+            page,
+            limit,
+            totalPages: Math.ceil(totalTweets / limit),
+            totalTweets,
+        };
     }
 
     async getTweetById(tweetId) {
-        try {
-            const tweetDocument = await TweetModel.findById(tweetId);
-            return tweetDocument ? TweetMapper.toDomain(tweetDocument) : null;
-        } catch (error) {
-            throw new Error('Error retrieving tweet by ID');
-        }
+        const tweetDocument = await TweetModel.findById(tweetId)
+            .populate('createdBy', 'name username');
+        return tweetDocument ? TweetMapper.toDomain(tweetDocument) : null;
     }
 
+
     async updateTweet(tweetId, message) {
-        try {
-            const updatedTweet = await TweetModel.findByIdAndUpdate(
-                tweetId,
-                { message, lastModifiedDate: Date.now() },
-                { new: true }
-            );
-            return updatedTweet ? TweetMapper.toDomain(updatedTweet) : null;
-        } catch (error) {
-            throw new Error('Error updating tweet');
-        }
+        const updatedTweet = await TweetModel.findByIdAndUpdate(
+            tweetId,
+            { message, lastModifiedDate: Date.now() },
+            { new: true }
+        ).populate('createdBy', 'name username');
+
+        return updatedTweet ? TweetMapper.toDomain(updatedTweet) : null;
     }
 
     async deleteTweetById(tweetId) {
-        try {
-            await TweetModel.findByIdAndDelete(tweetId);
-        } catch (error) {
-            throw new Error('Error deleting tweet');
-        }
+        await TweetModel.findByIdAndDelete(tweetId);
     }
 
     async getTweetsByUserIds(userIds, page = 1, limit = 10) {
-        try {
-            const skip = (page - 1) * limit;
-            const tweets = await TweetModel.find({ createdBy: { $in: userIds } })
-                .sort({ createdDate: -1 })
-                .skip(skip)
-                .limit(limit);
+        const skip = (page - 1) * limit;
+        const tweets = await TweetModel.find({ createdBy: { $in: userIds } })
+            .sort({ createdDate: -1 })
+            .skip(skip)
+            .limit(limit)
+            .populate('createdBy', 'name username');
 
-            const totalTweets = await TweetModel.countDocuments({ createdBy: { $in: userIds } });
-            return {
-                tweets: tweets.map(tweet => TweetMapper.toDomain(tweet)),
-                page,
-                limit,
-                totalPages: Math.ceil(totalTweets / limit),
-                totalTweets,
-            };
-        } catch (error) {
-            throw new Error('Error retrieving tweets by user IDs');
-        }
+        const totalTweets = await TweetModel.countDocuments({ createdBy: { $in: userIds } });
+        return {
+            tweets: tweets.map(tweet => TweetMapper.toDomain(tweet)),
+            page,
+            limit,
+            totalPages: Math.ceil(totalTweets / limit),
+            totalTweets,
+        };
     }
 }
 

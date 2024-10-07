@@ -1,12 +1,15 @@
 const express = require('express');
-const router = express.Router();
-
 const UserRoutes = require('./UserRoutes');
 const FollowRoutes = require('./FollowRoutes');
-const TweetRoutes = require('./tweetRoutes');
+const TweetRoutes = require('./TweetRoutes');
+const AuthRoutes = require('./AuthRoutes');
 
-router.use(UserRoutes);
-router.use(FollowRoutes);
-router.use(TweetRoutes);
+const router = express.Router();
 
-module.exports = router;
+module.exports = ({ authService, tokenBlacklist }) => {
+    router.use(UserRoutes({ authService, tokenBlacklist }));
+    router.use(AuthRoutes({ authService, tokenBlacklist }));
+    router.use(FollowRoutes({ authService, tokenBlacklist }));
+    router.use(TweetRoutes({ authService, tokenBlacklist }));
+    return router;
+};

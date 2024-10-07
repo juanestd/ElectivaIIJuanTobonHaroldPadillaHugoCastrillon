@@ -26,8 +26,12 @@ class TweetMapper {
         return {
             id: tweet.id,
             createdDate: tweet.createdDate,
-            createdBy: tweet.createdBy,
             message: tweet.message,
+            createdBy: {
+                id: tweet.createdBy._id,
+                name: tweet.createdBy.name,
+                username: tweet.createdBy.username
+            }
         };
     }
 }

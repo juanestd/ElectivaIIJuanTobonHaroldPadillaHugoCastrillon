@@ -1,53 +1,133 @@
-/**
- * @swagger
- * tags:
- *   name: Tweet
- *   description: Tweet management and operations
- */
+const CreateTweetCommand = require('../../core/services/features/tweet/commands/CreateTweetCommand/CreateTweetCommand');
+const UpdateTweetCommand = require('../../core/services/features/tweet/commands/UpdateTweetCommand/UpdateTweetCommand');
+const DeleteTweetCommand = require('../../core/services/features/tweet/commands/DeleteTweetCommand/DeleteTweetCommand');
+const GetTweetByIdQuery = require('../../core/services/features/tweet/queries/GetTweetByIdQuery/GetTweetByIdQuery');
+const GetTweetsByUsernameQuery = require('../../core/services/features/tweet/queries/GetTweetsByUsernameQuery/GetTweetsByUsernameQuery');
+const GetFeedQuery = require('../../core/services/features/tweet/queries/GetFeedQuery/GetFeedQuery');
+
 class TweetController {
-    constructor(tweetService) {
-        this.tweetService = tweetService;
+    constructor(
+        createTweetHandler,
+        updateTweetHandler,
+        deleteTweetHandler,
+        getTweetByIdHandler,
+        getTweetsByUsernameHandler,
+        getFeedHandler
+    ) {
+        this.createTweetHandler = createTweetHandler;
+        this.updateTweetHandler = updateTweetHandler;
+        this.deleteTweetHandler = deleteTweetHandler;
+        this.getTweetByIdHandler = getTweetByIdHandler;
+        this.getTweetsByUsernameHandler = getTweetsByUsernameHandler;
+        this.getFeedHandler = getFeedHandler;
     }
 
     /**
      * @swagger
-     * /{userId}/tweets:
+     * tags:
+     *   name: Tweet
+     *   description: Endpoints para operaciones de tweets
+     *
+     * components:
+     *   schemas:
+     *     Tweet:
+     *       type: object
+     *       properties:
+     *         id:
+     *           type: string
+     *           description: ID del tweet
+     *         message:
+     *           type: string
+     *           description: Contenido del tweet
+     *         createdDate:
+     *           type: string
+     *           format: date-time
+     *           description: Fecha de creación del tweet
+     *         createdBy:
+     *           type: object
+     *           properties:
+     *             id:
+     *               type: string
+     *               description: ID del usuario
+     *             name:
+     *               type: string
+     *               description: Nombre del usuario
+     *             username:
+     *               type: string
+     *               description: Nombre de usuario
+     *       example:
+     *         id: "60d21b4667d0d8992e610c85"
+     *         message: "Este es un tweet de prueba"
+     *         createdDate: "2023-07-01T12:34:56.789Z"
+     *         createdBy:
+     *           id: "60d0fe4f5311236168a109ca"
+     *           name: "Juan Pérez"
+     *           username: "juanperez"
+     */
+
+    /**
+     * @swagger
+     * /{username}/tweets:
      *   get:
-     *     summary: Get tweets of a specific user with pagination
-     *     tags: [Tweet]
+     *     summary: Obtener los tweets de un usuario específico con paginación
+     *     tags:
+     *       - Tweet
      *     parameters:
      *       - in: path
-     *         name: userId
+     *         name: username
      *         schema:
      *           type: string
      *         required: true
-     *         description: ID of the user
+     *         description: Nombre de usuario del que se quieren obtener los tweets
      *       - in: query
      *         name: page
      *         schema:
      *           type: integer
      *         required: false
-     *         description: Page number for pagination
+     *         description: Número de página para la paginación
      *       - in: query
      *         name: limit
      *         schema:
      *           type: integer
      *         required: false
-     *         description: Number of tweets per page
+     *         description: Número de tweets por página
      *     responses:
      *       200:
-     *         description: List of tweets
+     *         description: Lista de tweets
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 tweets:
+     *                   type: array
+     *                   items:
+     *                     $ref: '#/components/schemas/Tweet'
+     *                 page:
+     *                   type: integer
+     *                 limit:
+     *                   type: integer
+     *                 totalPages:
+     *                   type: integer
+     *                 totalTweets:
+     *                   type: integer
+     *       400:
+     *         description: Username es requerido
+     *       500:
+     *         description: Error del servidor
      */
     async getTweets(req, res) {
         try {
-            const { userId } = req.params;
+            const username = req.params.username;
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 10;
 
-            const result = await this.tweetService.getTweetsByUserId(userId, page, limit);
-            res.status(200).json(result);
+            const query = new GetTweetsByUsernameQuery(username, page, limit);
+            const tweets = await this.getTweetsByUsernameHandler.handle(query);
+
+            res.status(200).json(tweets);
         } catch (error) {
-            res.status(500).json({ message: 'An error occurred while retrieving tweets' });
+            res.status(500).json({ message: error.message });
         }
     }
 
@@ -55,47 +135,51 @@ class TweetController {
      * @swagger
      * /tweets/{id_tweet}:
      *   get:
-     *     summary: Get a tweet by its ID
-     *     tags: [Tweet]
+     *     summary: Obtener un tweet por su ID
+     *     tags:
+     *       - Tweet
      *     parameters:
      *       - in: path
      *         name: id_tweet
      *         schema:
      *           type: string
      *         required: true
-     *         description: ID of the tweet
+     *         description: ID del tweet
      *     responses:
      *       200:
-     *         description: Tweet details
+     *         description: Detalles del tweet
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/Tweet'
+     *       404:
+     *         description: Tweet no encontrado
+     *       500:
+     *         description: Error del servidor
      */
     async getTweetById(req, res) {
         try {
             const { id_tweet } = req.params;
-            const tweet = await this.tweetService.getTweetById(id_tweet);
+            const query = new GetTweetByIdQuery(id_tweet);
+            const tweet = await this.getTweetByIdHandler.handle(query);
             if (!tweet) {
                 return res.status(404).json({ message: 'Tweet not found' });
             }
-            res.status(200).json({ tweet });
+            res.status(200).json(tweet);
         } catch (error) {
-            res.status(500).json({ message: 'An error occurred while retrieving the tweet' });
+            res.status(500).json({ message: error.message });
         }
     }
 
     /**
      * @swagger
-     * /{userId}/tweets:
+     * /tweets:
      *   post:
-     *     summary: Create a new tweet
-     *     tags: [Tweet]
+     *     summary: Crear un nuevo tweet
+     *     tags:
+     *       - Tweet
      *     security:
      *       - bearerAuth: []
-     *     parameters:
-     *       - in: path
-     *         name: userId
-     *         required: true
-     *         schema:
-     *           type: string
-     *         description: ID of the user creating the tweet
      *     requestBody:
      *       required: true
      *       content:
@@ -107,30 +191,49 @@ class TweetController {
      *             properties:
      *               message:
      *                 type: string
-     *                 description: The content of the tweet
+     *                 description: Contenido del tweet
      *                 maxLength: 280
      *     responses:
      *       201:
-     *         description: Tweet created successfully
+     *         description: Tweet creado exitosamente
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 message:
+     *                   type: string
+     *                   example: "Tweet published successfully"
+     *                 tweet:
+     *                   $ref: '#/components/schemas/Tweet'
+     *       400:
+     *         description: Error en la solicitud
+     *       401:
+     *         description: No autorizado
+     *       500:
+     *         description: Error del servidor
      */
     async createTweet(req, res) {
         try {
-            const { userId } = req.params;
+            const userId = req.user.id;
             const { message } = req.body;
-            const tweet = await this.tweetService.createTweet({ message, createdBy: userId });
+
+            const command = new CreateTweetCommand({ message, createdBy: userId });
+            const tweet = await this.createTweetHandler.handle(command);
+
             res.status(201).json({ message: 'Tweet published successfully', tweet });
         } catch (error) {
             res.status(400).json({ message: error.message });
         }
     }
 
-
     /**
      * @swagger
      * /tweets/{id_tweet}:
      *   put:
-     *     summary: Update an existing tweet
-     *     tags: [Tweet]
+     *     summary: Actualizar un tweet existente
+     *     tags:
+     *       - Tweet
      *     security:
      *       - bearerAuth: []
      *     parameters:
@@ -139,27 +242,50 @@ class TweetController {
      *         schema:
      *           type: string
      *         required: true
-     *         description: ID of the tweet
+     *         description: ID del tweet a actualizar
      *     requestBody:
      *       required: true
      *       content:
      *         application/json:
      *           schema:
      *             type: object
+     *             required:
+     *               - message
      *             properties:
      *               message:
      *                 type: string
-     *                 description: Updated content of the tweet
+     *                 description: Nuevo contenido del tweet
      *                 maxLength: 280
      *     responses:
      *       200:
-     *         description: Tweet updated successfully
+     *         description: Tweet actualizado exitosamente
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 message:
+     *                   type: string
+     *                   example: "Tweet updated successfully"
+     *                 updatedTweet:
+     *                   $ref: '#/components/schemas/Tweet'
+     *       400:
+     *         description: Error en la solicitud
+     *       401:
+     *         description: No autorizado
+     *       404:
+     *         description: Tweet no encontrado
+     *       500:
+     *         description: Error del servidor
      */
     async updateTweet(req, res) {
         try {
             const { id_tweet } = req.params;
             const { message } = req.body;
-            const updatedTweet = await this.tweetService.updateTweet(id_tweet, message);
+
+            const command = new UpdateTweetCommand(id_tweet, message);
+            const updatedTweet = await this.updateTweetHandler.handle(command);
+
             res.status(200).json({ message: 'Tweet updated successfully', updatedTweet });
         } catch (error) {
             res.status(400).json({ message: error.message });
@@ -170,8 +296,9 @@ class TweetController {
      * @swagger
      * /tweets/{id_tweet}:
      *   delete:
-     *     summary: Delete a tweet by its ID
-     *     tags: [Tweet]
+     *     summary: Eliminar un tweet por su ID
+     *     tags:
+     *       - Tweet
      *     security:
      *       - bearerAuth: []
      *     parameters:
@@ -180,59 +307,95 @@ class TweetController {
      *         schema:
      *           type: string
      *         required: true
-     *         description: ID of the tweet
+     *         description: ID del tweet a eliminar
      *     responses:
      *       200:
-     *         description: Tweet deleted successfully
+     *         description: Tweet eliminado exitosamente
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 message:
+     *                   type: string
+     *                   example: "Tweet deleted successfully"
+     *       401:
+     *         description: No autorizado
+     *       404:
+     *         description: Tweet no encontrado
+     *       500:
+     *         description: Error del servidor
      */
     async deleteTweet(req, res) {
         try {
             const { id_tweet } = req.params;
-            await this.tweetService.deleteTweetById(id_tweet);
+            const command = new DeleteTweetCommand(id_tweet);
+            await this.deleteTweetHandler.handle(command);
             res.status(200).json({ message: 'Tweet deleted successfully' });
         } catch (error) {
-            res.status(500).json({ message: 'An error occurred while deleting the tweet' });
+            res.status(500).json({ message: error.message });
         }
     }
 
     /**
      * @swagger
-     * /{userId}/feed:
+     * /feed:
      *   get:
-     *     summary: Get tweets from followed users
-     *     tags: [Tweet]
+     *     summary: Obtener tweets de los usuarios seguidos
+     *     tags:
+     *       - Tweet
      *     security:
      *       - bearerAuth: []
      *     parameters:
-     *       - in: path
-     *         name: userId
-     *         required: true
-     *         schema:
-     *           type: string
-     *         description: ID of the user
      *       - in: query
      *         name: page
      *         schema:
      *           type: integer
-     *         description: Page number for pagination
+     *         required: false
+     *         description: Número de página para la paginación
      *       - in: query
      *         name: limit
      *         schema:
      *           type: integer
-     *         description: Number of tweets per page
+     *         required: false
+     *         description: Número de tweets por página
      *     responses:
      *       200:
-     *         description: List of tweets from followed users
+     *         description: Lista de tweets del feed
+     *         content:
+     *           application/json:
+     *             schema:
+     *               type: object
+     *               properties:
+     *                 tweets:
+     *                   type: array
+     *                   items:
+     *                     $ref: '#/components/schemas/Tweet'
+     *                 page:
+     *                   type: integer
+     *                 limit:
+     *                   type: integer
+     *                 totalPages:
+     *                   type: integer
+     *                 totalTweets:
+     *                   type: integer
+     *       401:
+     *         description: No autorizado
+     *       500:
+     *         description: Error del servidor
      */
     async getFeed(req, res) {
         try {
-            const { userId } = req.params;
+            const userId = req.user.id;
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 10;
-            const tweets = await this.tweetService.getFeed(userId, page, limit);
+
+            const query = new GetFeedQuery(userId, page, limit);
+            const tweets = await this.getFeedHandler.handle(query);
+
             res.status(200).json(tweets);
         } catch (error) {
-            res.status(500).json({ message: 'An error occurred while retrieving the feed' });
+            res.status(500).json({ message: error.message });
         }
     }
 }

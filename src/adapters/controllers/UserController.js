@@ -1,19 +1,25 @@
+const CreateUserCommand = require('../../core/services/features/user/commands/CreateUserCommand/CreateUserCommand');
+const GetAuthenticatedUserQuery = require('../../core/services/features/user/queries/GetAuthenticatedUserQuery/GetAuthenticatedUserQuery');
 /**
  * @swagger
  * tags:
  *   name: User
- *   description: User management and authentication
+ *   description: Gestión de usuarios
  */
 class UserController {
-    constructor(userService) {
-        this.userService = userService;
+    constructor(
+        createUserHandler,
+        getAuthenticatedUserHandler
+    ) {
+        this.createUserHandler = createUserHandler;
+        this.getAuthenticatedUserHandler = getAuthenticatedUserHandler;
     }
 
     /**
      * @swagger
      * /auth/register:
      *   post:
-     *     summary: Register a new user
+     *     summary: Registrar un nuevo usuario
      *     tags: [User]
      *     requestBody:
      *       required: true
@@ -29,20 +35,20 @@ class UserController {
      *             properties:
      *               username:
      *                 type: string
-     *                 description: The username of the new user
+     *                 description: El nombre de usuario del nuevo usuario
      *               password:
      *                 type: string
      *                 format: password
-     *                 description: The password of the new user
+     *                 description: La contraseña del nuevo usuario
      *               email:
      *                 type: string
-     *                 description: The email of the new user
+     *                 description: El correo electrónico del nuevo usuario
      *               name:
      *                 type: string
-     *                 description: The name of the new user
+     *                 description: El nombre del nuevo usuario
      *     responses:
      *       201:
-     *         description: User registered successfully
+     *         description: Usuario registrado exitosamente
      *         content:
      *           application/json:
      *             schema:
@@ -51,21 +57,17 @@ class UserController {
      *                 message:
      *                   type: string
      *                 user:
-     *                   type: object
-     *                   properties:
-     *                     id:
-     *                       type: string
-     *                     username:
-     *                       type: string
+     *                   $ref: '#/components/schemas/User'
      *       400:
-     *         description: Bad request
+     *         description: Solicitud incorrecta
      *       500:
-     *         description: Internal server error
+     *         description: Error interno del servidor
      */
     async registerUser(req, res) {
         try {
             const { username, password, email, name } = req.body;
-            const user = await this.userService.createUser({ username, password, email, name });
+            const command = new CreateUserCommand(username, password, email, name);
+            const user = await this.createUserHandler.handle(command);
             res.status(201).json({ message: 'User registered successfully', user });
         } catch (error) {
             if (error.message.includes('username') || error.message.includes('email')) {
@@ -78,106 +80,37 @@ class UserController {
 
     /**
      * @swagger
-     * /auth/login:
-     *   post:
-     *     summary: Log in a user
+     * /me:
+     *   get:
+     *     summary: Obtener detalles del usuario autenticado
      *     tags: [User]
-     *     requestBody:
-     *       required: true
-     *       content:
-     *         application/json:
-     *           schema:
-     *             type: object
-     *             required:
-     *               - username
-     *               - password
-     *             properties:
-     *               username:
-     *                 type: string
-     *                 description: The username of the user
-     *               password:
-     *                 type: string
-     *                 format: password
-     *                 description: The password of the user
+     *     security:
+     *       - bearerAuth: []
      *     responses:
      *       200:
-     *         description: Login successful
+     *         description: Detalles del usuario autenticado
      *         content:
      *           application/json:
      *             schema:
-     *               type: object
-     *               properties:
-     *                 message:
-     *                   type: string
-     *                 user:
-     *                   type: object
-     *                   properties:
-     *                     id:
-     *                       type: string
-     *                     username:
-     *                       type: string
-     *                 token:
-     *                   type: string
-     *                   description: JWT token for authentication
+     *               $ref: '#/components/schemas/User'
      *       401:
-     *         description: Invalid credentials
+     *         description: No autorizado
+     *       404:
+     *         description: Usuario no encontrado
      *       500:
-     *         description: Internal server error
-     */
-    async loginUser(req, res) {
-        try {
-            const { username, password } = req.body;
-            const { user, token } = await this.userService.loginUser(username, password);
-            res.status(200).json({ message: 'Login successful', user, token });
-        } catch (error) {
-            res.status(401).json({ message: error.message });
-        }
-    }
-
-    /**
-     * @swagger
-     * /me:
-     *   get:
-     *     summary: Get authenticated user details
-     *     tags: [User]
-     *     security:
-     *       - bearerAuth: []
-     *     responses:
-     *       200:
-     *         description: Authenticated user details
+     *         description: Error interno del servidor
      */
     async getAuthenticatedUser(req, res) {
         try {
-            const user = req.user;
-            res.status(200).json({ user });
+            const userId = req.user.id;
+            const query = new GetAuthenticatedUserQuery(userId);
+            const user = await this.getAuthenticatedUserHandler.handle(query);
+            if (!user) {
+                return res.status(404).json({ message: 'User not found' });
+            }
+            res.status(200).json(user);
         } catch (error) {
             res.status(401).json({ message: error.message });
-        }
-    }
-
-    /**
-     * @swagger
-     * /logout:
-     *   post:
-     *     summary: Log out the user
-     *     tags: [User]
-     *     security:
-     *       - bearerAuth: []
-     *     responses:
-     *       200:
-     *         description: Successfully logged out
-     */
-    async logoutUser(req, res) {
-        try {
-            const authHeader = req.headers.authorization;
-            if (!authHeader) {
-                return res.status(400).json({ message: 'Authorization header missing' });
-            }
-            const token = authHeader.split(' ')[1];
-            const result = await this.userService.logoutUser(token);
-            res.status(200).json(result);
-        } catch (error) {
-            res.status(500).json({ message: error.message });
         }
     }
 }

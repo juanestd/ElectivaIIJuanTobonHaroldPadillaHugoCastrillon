@@ -1,4 +1,4 @@
-const BaseDomainModel = require('../domain/common/baseDomainModel');
+const BaseDomainModel = require('./common/BaseDomainModel');
 
 class Tweet extends BaseDomainModel {
     constructor({ id, createdDate, createdBy, lastModifiedDate, lastModifiedBy, message }) {

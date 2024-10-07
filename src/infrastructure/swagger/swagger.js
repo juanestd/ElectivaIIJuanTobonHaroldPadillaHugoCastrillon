@@ -98,14 +98,15 @@ const swaggerOptions = {
   },
   apis: [
     './src/infrastructure/express/routes/*.js',
-    './src/adapters/controllers/*.js'
+    './src/adapters/controllers/*.js',
   ],
 };
 
 const swaggerSpec = swaggerJsDoc(swaggerOptions);
+
 const swaggerDocs = (app, port) => {
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
   console.log(`Version 1 Docs are available at http://localhost:${port}/api-docs`);
-}
+};
 
 module.exports = swaggerDocs;

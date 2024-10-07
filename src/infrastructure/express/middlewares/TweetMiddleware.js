@@ -1,4 +1,4 @@
-const { body, param, validationResult } = require('express-validator');
+const { body, validationResult } = require('express-validator');
 
 const validateTweetCreation = [
     body('message')
@@ -33,20 +33,4 @@ const validateTweetUpdate = [
     }
 ];
 
-const validateUserId = [
-    param('userId')
-        .isString()
-        .withMessage('User ID must be a string')
-        .notEmpty()
-        .withMessage('User ID is required'),
-
-    (req, res, next) => {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
-        }
-        next();
-    }
-];
-
-module.exports = { validateTweetCreation, validateTweetUpdate, validateUserId };
+module.exports = { validateTweetCreation, validateTweetUpdate };
