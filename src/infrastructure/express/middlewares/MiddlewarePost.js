@@ -24,4 +24,4 @@ const validatePostUpdate = (req, res, next) => {
 module.exports = {
     validatePostCreation,
     validatePostUpdate
-};
+}; 
