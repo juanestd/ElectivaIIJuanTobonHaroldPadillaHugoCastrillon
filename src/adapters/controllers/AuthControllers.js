@@ -1,4 +1,4 @@
-const users = require('../mocks/authMocks');
+const users = require('../../core/domain/mocks/AuthMocks');
 
 const registerUser = (req, res) => {
     const { username, password } = req.body;

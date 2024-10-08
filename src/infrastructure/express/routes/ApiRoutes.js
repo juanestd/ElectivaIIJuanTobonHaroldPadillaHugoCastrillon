@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
 
-const authRoutes = require("./authRoutes");
-const postsRoutes = require("./postsRoutes");
-const followersRoutes = require("./followersRoutes");
-const followingRoutes = require("./followingRoutes");
+const authRoutes = require("./AuthRoutes");
+const postsRoutes = require("./PostsRoutes");
+const followersRoutes = require("./FollowersRoutes");
+const followingRoutes = require("./FollowingRoutes");
 
 router.use(authRoutes);
 router.use(postsRoutes);

@@ -1,4 +1,4 @@
-const followings = require('../mocks/followingMocks');
+const followings = require('../../core/domain/mocks/FollowingMocks');
 
 const getFollowings = (req, res) => {
     const { username } = req.params;
