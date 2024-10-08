@@ -1,4 +1,4 @@
-const followings = require('../mocks/followingMocks');
+const followings = require('../../../core/domain/mocks/FollowingMocks');
 
 const validateFollowingCreation = (req, res, next) => {
     const { username } = req.params;

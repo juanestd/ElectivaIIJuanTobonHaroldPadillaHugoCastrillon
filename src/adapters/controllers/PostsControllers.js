@@ -1,4 +1,4 @@
-let posts = require('../mocks/postMocks');
+let posts = require('../../core/domain/mocks/PostMocks');
 
 const getPosts = (req, res) => {
     const { username } = req.params;

@@ -1,4 +1,4 @@
-const posts = require('../mocks/postMocks');
+const posts = require('../../../core/domain/mocks/PostMocks');
 
 const validatePostCreation = (req, res, next) => {
     const { username } = req.params;

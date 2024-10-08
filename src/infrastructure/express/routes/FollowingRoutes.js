@@ -7,7 +7,7 @@ const {
   updateFollowing,
   deleteFollowing,
   countFollowings,
-} = require("../controllers/followingControllers");
+} = require("../../../adapters/controllers/followingControllers");
 const { validateFollowingCreation, validateFollowingUpdate } = require("../middlewares/middlewareFollowing");
 
 router.get('/:username/following/', getFollowings);

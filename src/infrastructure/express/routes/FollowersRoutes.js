@@ -7,7 +7,7 @@ const {
   updateFollower,
   deleteFollower,
   countFollowers,
-} = require("../controllers/followersControllers");
+} = require("../../../adapters/controllers/followersControllers");
 const { validateFollowerCreation, validateFollowerUpdate } = require("../middlewares/middlewareFollower");
 
 router.get('/:username/followers/', getFollowers);

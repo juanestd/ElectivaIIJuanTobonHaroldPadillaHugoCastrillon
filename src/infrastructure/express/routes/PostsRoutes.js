@@ -6,7 +6,7 @@ const {
     createPost,
     updatePost,
     deletePost
-} = require("../controllers/postsControllers");
+} = require("../../../adapters/controllers/postsControllers");
 const { validatePostCreation, validatePostUpdate } = require("../middlewares/middlewarePost");
 
 router.get('/:username/posts/', getPosts);
