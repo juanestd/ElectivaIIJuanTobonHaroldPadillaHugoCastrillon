@@ -1,4 +1,5 @@
 const AuthenticateUserCommand = require('../../core/services/features/auth/commands/AuthenticateUserCommand/AuthenticateUserCommand');
+const LogoutUserCommand = require('../../core/services/features/auth/commands/LogoutUserCommand/LogoutUserCommand');
 
 /**
  * @swagger
@@ -7,8 +8,9 @@ const AuthenticateUserCommand = require('../../core/services/features/auth/comma
  *   description: Autenticación de usuarios
  */
 class AuthController {
-    constructor(authenticateUserHandler) {
+    constructor(authenticateUserHandler, logoutUserHandler) {
         this.authenticateUserHandler = authenticateUserHandler;
+        this.logoutUserHandler = logoutUserHandler;
     }
 
     /**
@@ -46,6 +48,26 @@ class AuthController {
         } catch (error) {
             res.status(401).json({ message: error.message });
         }
+    }
+
+    /**
+     * @swagger
+     * /auth/logout:
+     *   post:
+     *     summary: Cerrar sesión del usuario
+     *     tags: [Auth]
+     *     security:
+     *       - bearerAuth: []
+     *     responses:
+     *       200:
+     *         description: Sesión cerrada exitosamente
+     */
+    async logout(req, res) {
+        const token = req.headers.authorization.split(' ')[1];
+        const command = new LogoutUserCommand(token);
+        const result = await this.logoutUserHandler.handle(command);
+
+        return res.status(200).json(result);
     }
 }
 

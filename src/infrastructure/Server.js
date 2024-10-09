@@ -4,14 +4,16 @@ const swaggerDocs = require('./swagger/swagger');
 const errorHandler = require('./express/middlewares/errorHandler');
 const UserRepository = require("./repositories/UserRepository");
 const JwtAuthService = require("./services/JwtAuthService");
+const TokenBlacklist = require("./utils/TokenBlacklist");
 
 const userRepository = new UserRepository();
 const authService = new JwtAuthService('your-secret-key', '1h', userRepository);
+const tokenBlacklist = new TokenBlacklist();
 
 const app = express();
 app.use(express.json());
 
-const router = require('./express/routes/ApiRoutes')({ authService });
+const router = require('./express/routes/ApiRoutes')({ authService, tokenBlacklist });
 
 app.use('/api', router);
 app.use(errorHandler);
