@@ -1,9 +1,21 @@
 const express = require("express");
-const router = express.Router();
-const { registerUser, loginUser } = require("../../../adapters/controllers/authControllers");
-const { validateRegister, validateLogin } = require("../middlewares/middlewareAuth");
+const { validateLogin } = require('../middlewares/UserMiddleware');
+const { authMiddleware } = require('../middlewares/AuthMiddleware');
+const AuthController = require("../../../adapters/controllers/AuthController");
 
-router.post('/auth/register', validateRegister, registerUser);
-router.post('/auth/login', validateLogin, loginUser);
+const AuthenticateUserHandler = require("../../../core/services/features/auth/commands/AuthenticateUserCommand/AuthenticateUserHandler");
+const LogoutUserHandler = require("../../../core/services/features/auth/commands/LogoutUserCommand/LogoutUserHandler");
 
-module.exports = router;
+module.exports = ({ authService, tokenBlacklist }) => {
+    const router = express.Router();
+
+    const authenticateUserHandler = new AuthenticateUserHandler(authService);
+    const logoutUserHandler = new LogoutUserHandler(tokenBlacklist);
+
+    const authController = new AuthController(authenticateUserHandler, logoutUserHandler);
+
+    router.post('/auth/login', validateLogin, (req, res) => authController.login(req, res));
+    router.post('/auth/logout', authMiddleware(authService, tokenBlacklist), (req, res) => authController.logout(req, res));
+
+    return router;
+};
