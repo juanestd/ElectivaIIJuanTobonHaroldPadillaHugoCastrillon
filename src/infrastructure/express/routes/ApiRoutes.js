@@ -8,7 +8,7 @@ const followersRoutes = require("./FollowersRoutes");
 const followingRoutes = require("./FollowingRoutes");
 
 module.exports = ({ authService, tokenBlacklist }) => {
-    router.use(UserRoutes( ));
+    router.use(UserRoutes({ authService, tokenBlacklist }));
     router.use(AuthRoutes({ authService, tokenBlacklist }));
     router.use(postsRoutes);
     router.use(followersRoutes);

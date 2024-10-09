@@ -1,5 +1,5 @@
-const CreateUserCommand = require('../../core/services/features/user/CreateUserCommand/CreateUserCommand');
-
+const CreateUserCommand = require('../../core/services/features/user/commands/CreateUserCommand/CreateUserCommand');
+const GetAuthenticatedUserQuery = require('../../core/services/features/user/queries/GetAuthenticatedUserQuery/GetAuthenticatedUserQuery');
 /**
  * @swagger
  * tags:
@@ -8,9 +8,11 @@ const CreateUserCommand = require('../../core/services/features/user/CreateUserC
  */
 class UserController {
     constructor(
-        createUserHandler
+        createUserHandler,
+        getAuthenticatedUserHandler
     ) {
         this.createUserHandler = createUserHandler;
+        this.getAuthenticatedUserHandler = getAuthenticatedUserHandler;
     }
 
     /**
@@ -72,6 +74,39 @@ class UserController {
                 return res.status(400).json({ message: error.message });
             }
             res.status(500).json({ message: 'An error occurred while registering the user' });
+        }
+    }
+
+    /**
+     * @swagger
+     * /me:
+     *   get:
+     *     summary: Obtener detalles del usuario autenticado
+     *     tags: [User]
+     *     security:
+     *       - bearerAuth: []
+     *     responses:
+     *       200:
+     *         description: Detalles del usuario autenticado
+     *         content:
+     *           application/json:
+     *             schema:
+     *               $ref: '#/components/schemas/User'
+     *       401:
+     *         description: No autorizado
+     *       404:
+     *         description: Usuario no encontrado
+     *       500:
+     *         description: Error interno del servidor
+     */
+    async getAuthenticatedUser(req, res) {
+        try {
+            const userId = req.user.id;
+            const query = new GetAuthenticatedUserQuery(userId);
+            const user = await this.getAuthenticatedUserHandler.handle(query);
+            res.status(200).json(user);
+        } catch (error) {
+            res.status(401).json({ message: error.message });
         }
     }
 }
