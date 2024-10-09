@@ -2,7 +2,7 @@ const express = require("express");
 const { validateRegister } = require('../middlewares/UserMiddleware');
 const UserController = require("../../../adapters/controllers/UserController");
 const UserRepository = require("../../../infrastructure/repositories/UserRepository");
-const CreateUserHandler = require('../../../core/services/features/user/CreateUserCommand/CreateUserCommand');
+const CreateUserHandler = require('../../../core/services/features/user/CreateUserCommand/CreateUserHandler');
 
 module.exports = () => {
     const router = express.Router();

@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const UserMapper = require('../../../../mapping/UserMapper');
+const UserMapper = require('../../../mapping/UserMapper');
 
 class CreateUserHandler {
     constructor(userRepository) {
