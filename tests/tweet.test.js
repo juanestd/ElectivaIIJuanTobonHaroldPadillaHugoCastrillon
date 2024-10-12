@@ -21,7 +21,7 @@ describe('Tweet API', () => {
         // Arrange
         const loginData = {
             username: 'testuser',
-            password: 'testpassword',
+            password: 'testuser',
         };
 
         // Act
@@ -32,7 +32,7 @@ describe('Tweet API', () => {
         // Assert
         expect(response.statusCode).toBe(200);
         expect(response.body).toHaveProperty('token');
-        expect(response.body.user.username).toBe('testuser2');
+        expect(response.body.user.username).toBe('testuser');
 
         token = response.body.token;
     });

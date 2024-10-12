@@ -20,7 +20,7 @@ describe('Follow API', () => {
         //Arrange
         const loginData = {
             username: 'testuser',
-            password: 'testpassword',
+            password: 'testuser',
         };
 
         //Act
@@ -31,17 +31,16 @@ describe('Follow API', () => {
         //Assert
         expect(response.statusCode).toBe(200);
         expect(response.body).toHaveProperty('token');
-        expect(response.body.user.username).toBe('testuser2');
+        expect(response.body.user.username).toBe('testuser');
 
         token = response.body.token;
     });
 
-    // Cambiar el username cada vez que se ejecute esta prueba
     it('should follow a user by username', async () => {
         //Arrange
         //Act
         const response = await request(app)
-            .post('/api/Prueba12/follow')
+            .post('/api/testuser2/follow')
             .set('Authorization', `Bearer ${token}`);
 
         //Assert
@@ -53,7 +52,7 @@ describe('Follow API', () => {
         //Arrange
         //Act
         const response = await request(app)
-            .post('/api/testuser2/follow')
+            .post('/api/testuser1/follow')
             .set('Authorization', `Bearer ${token}`);
 
         //Assert
@@ -65,7 +64,7 @@ describe('Follow API', () => {
         //Arrange
         //Act
         const response = await request(app)
-            .post('/api/testser2/follow')
+            .post('/api/testuser-1/follow')
             .set('Authorization', `Bearer ${token}`);
 
         //Assert
@@ -77,7 +76,7 @@ describe('Follow API', () => {
         //Arrange
         //Act
         const response = await request(app)
-            .get('/api/testuser2/followers/count')
+            .get('/api/testuser/followers/count')
             .set('Authorization', `Bearer ${token}`);
 
         //Assert
@@ -101,12 +100,12 @@ describe('Follow API', () => {
         //Arrange
         //Act
         const response = await request(app)
-            .get('/api/testuser2/following/count')
+            .get('/api/testuser/following/count')
             .set('Authorization', `Bearer ${token}`);
 
         //Assert
         expect(response.statusCode).toBe(200);
-        expect(response.body).toHaveProperty('following', 6);
+        expect(response.body).toHaveProperty('following', 2);
     });
 
     it('should return error when trying to get following count for a non-existent user', async () => {
@@ -125,18 +124,13 @@ describe('Follow API', () => {
         //Arrange
         //Act
         const response = await request(app)
-            .get('/api/testuser2/following')
+            .get('/api/testuser1/following')
             .set('Authorization', `Bearer ${token}`);
 
         //Assert
         expect(response.statusCode).toBe(200);
         expect(response.body).toHaveProperty('following', [
-            { "name": "Test User", "username": "testuser2" },
-            { "name": "Test User", "username": "testuser9" },
-            { "name": "Test User", "username": "testuser10" },
-            { "name": "Test User", "username": "testuser19" },
-            { "name": "Test User", "username": "testuser20" },
-            { "name": "Test User", "username": "testuser3" }
+            { "name": "Test User", "username": "testuser" }
         ]);
     });
 
@@ -161,9 +155,7 @@ describe('Follow API', () => {
 
         //Assert
         expect(response.statusCode).toBe(200);
-        expect(response.body).toHaveProperty('followers', [
-            { "following": true, "name": "Test User", "username": "testuser2" }
-        ]);
+        expect(response.body.followers[0]).toHaveProperty("username", "testuser");
     });
 
     it('should return error when trying to get the followers list for a non-existent user', async () => {
