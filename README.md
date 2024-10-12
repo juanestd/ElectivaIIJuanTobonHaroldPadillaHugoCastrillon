@@ -1,87 +1,37 @@
-# ElectivaIIJuanTobonHaroldPadillaHugoCastrillon
+# Clone de X
 
+## Course
+Electiva II
 
-## Integrantes
+## Team name
+Macrosoft
+
+## Members
 - [Hugo Armando Castrillón Rivera](https://github.com/HArmandoCRivera)
 - [Juan Esteban Tobón](https://github.com/juanestd)
 - [Harold Yesid Padilla](https://github.com/hypadilla)
 
-## Tecnología
+## Description
+Clone de X is an application that simulates the functionality of a social network, allowing users to register, log in, post tweets, follow other users, and manage their profile. The project has been designed using **Clean Architecture**, promoting the separation of responsibilities and maintainability of the code. We have implemented several design patterns, including the **Mapper pattern**, **CQRS** (Command Query Responsibility Segregation), **Dependency Injection**, **Interface Segregation**, and **Single Responsibility**.
+
+Additionally, we have implemented **JWT authentication** to secure access to the API's protected routes. The API documentation is created using **Swagger**, allowing developers and users to easily view and test the endpoints. To ensure code quality, **unit tests** have been conducted using **Jest** and **Supertest**. **Bcrypt** is also used for **password encryption**, ensuring the security of user data.
+
+## Technology
 - <NodeJs ^20.11.1>
-- <express ^4.19.2>
+- npm
 
-# Trabajo 1 Electiva II (Clon de X)
+## How to Run the Project
 
-Este proyecto pretende realizar un clon de la red social X el cual permitirá ejecutar las funcionalidades de registro, inicio de sesión, publicación de
-tweets, gestión de seguidores y seguidos.
-
-# Como correr el proyecto
-
-1. **Clona el Repositorio:**
+1. **Clone the Repository:**
 ```bash
 git clone https://github.com/juanestd/ElectivaIIJuanTobonHaroldPadillaHugoCastrillon
 ```
 
-Correr la app en modo desarrollador
+Run the app in development mode
 
-### `npm run dev`
-Abrir [http://localhost:3000](http://localhost:3000) para ver en el navegador.
+`npm run dev`
 
-# Listado de endpoints
+Install the dependencies
+`npm install`
 
-## Auth
-
-### POST: 
-
-/api/auth/register
-/api/auth/login
-
-## Posts
-
-### POST: 
-/api/:username/posts
-{
-"message":"ejemplo"
-}
-### GET
-/api/:username/posts
-/api/:username/posts/:id_post
-### PUT
-/api/:username/posts/
-{
-"id":1, 
-"message":"ejemplo"
-}
-### DELETE
-/api/:username/posts/:id_post
-
-## Followers
-
-### POST: 
-
-/api/:username/followers
-### GET
-/api/:username/followers
-/api/:username/followers/:id_followers
-### PUT
-/api/:username/followers/
-### DELETE
-/api/:username/followers/:id_followers
-
-## Following
-
-### POST: 
-/api/:username/following
-### GET
-/api/:username/following
-/api/:username/following/:id_following
-### PUT
-/api/:username/following/
-### DELETE
-/api/:username/following/:id_following
-
-
-
-
-
-
+Open the [API Documentation](http://localhost:3000/api-docs) to view in the browser.
