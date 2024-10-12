@@ -50,6 +50,25 @@ const swaggerOptions = {
             },
           },
         },
+        Follow: {
+          type: 'object',
+          required: ['followerId', 'followingId'],
+          properties: {
+            followerId: {
+              type: 'string',
+              description: 'The ID of the user who follows',
+            },
+            followingId: {
+              type: 'string',
+              description: 'The ID of the user being followed',
+            },
+            followedDate: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Date when the follow relationship was created',
+            },
+          },
+        },
       },
     },
   },
