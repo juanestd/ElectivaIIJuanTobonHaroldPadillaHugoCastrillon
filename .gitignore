@@ -128,3 +128,11 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+.idea/ElectivaIIJuanTobonHaroldPadillaHugoCastrillon.iml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+package-lock.json
+package-lock.json
+.idea/workspace.xml
+.vscode/launch.json
