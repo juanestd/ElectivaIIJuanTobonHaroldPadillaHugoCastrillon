@@ -69,6 +69,30 @@ const swaggerOptions = {
             },
           },
         },
+        Tweet: {
+          type: 'object',
+          required: ['message', 'createdBy'],
+          properties: {
+            id: {
+              type: 'string',
+              description: 'Tweet ID',
+            },
+            message: {
+              type: 'string',
+              description: 'The content of the tweet',
+              maxLength: 280,
+            },
+            createdDate: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Date when the tweet was created',
+            },
+            createdBy: {
+              type: 'string',
+              description: 'ID of the user who created the tweet',
+            },
+          },
+        },
       },
     },
   },
