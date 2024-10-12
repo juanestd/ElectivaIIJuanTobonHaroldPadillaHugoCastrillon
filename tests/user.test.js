@@ -20,7 +20,7 @@ describe('User API', () => {
   it('should register a new user with random data', async () => {
     const randomUsername = faker.internet.userName();
     const randomEmail = faker.internet.email();
-    const randomName = faker.internet.fullName();
+    const randomName = faker.person.fullName();
     const randomPassword = faker.internet.password();
 
     //Arrange
@@ -46,7 +46,7 @@ describe('User API', () => {
     // Arrange
     const newUser = {
       username: 'testuser',
-      password: 'testpassword',
+      password: 'testuser',
       email: 'test@example.com',
       name: 'Test User',
     };
@@ -65,7 +65,7 @@ describe('User API', () => {
     // Arrange
     const loginData = {
       username: 'testuser',
-      password: 'testpassword',
+      password: 'testuser',
     };
 
     // Act
@@ -76,7 +76,7 @@ describe('User API', () => {
     // Assert
     expect(response.statusCode).toBe(200);
     expect(response.body).toHaveProperty('token');
-    expect(response.body.user.username).toBe('testuser2');
+    expect(response.body.user.username).toBe('testuser');
 
     token = response.body.token;
   });
@@ -85,7 +85,7 @@ describe('User API', () => {
     // Arrange
     const loginData = {
       username: 'testuser-1',
-      password: 'testpassword',
+      password: 'testuser',
     };
 
     // Act
