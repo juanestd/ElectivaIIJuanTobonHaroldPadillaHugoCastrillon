@@ -8,7 +8,7 @@ const GetFeedQuery = require('../../core/services/features/tweet/queries/GetFeed
 /**
  * @swagger
  * tags:
- *   name: Tweets
+ *   name: Tweet
  *   description: Tweets de los usuarios
  */
 class TweetController {
