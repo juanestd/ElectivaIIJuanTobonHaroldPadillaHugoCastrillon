@@ -1,7 +1,7 @@
 const express = require("express");
 const FollowController = require("../../../adapters/controllers/FollowController");
-const FollowRepository = require("../../../infrastructure/repositories/FollowRepository");
-const UserRepository = require("../../../infrastructure/repositories/UserRepository");
+const FollowRepository = require("../../repositories/FollowRepository");
+const UserRepository = require("../../repositories/UserRepository");
 const { validateUsername } = require('../middlewares/FollowMiddleware');
 const { authMiddleware } = require('../middlewares/AuthMiddleware');
 const FollowByUsernameHandler = require("../../../core/services/features/follow/commands/FollowByUsernameCommand/FollowByUsernameHandler");

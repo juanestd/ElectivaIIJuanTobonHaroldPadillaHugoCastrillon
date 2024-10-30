@@ -2,7 +2,7 @@ const express = require("express");
 const { validateRegister } = require('../middlewares/UserMiddleware');
 const { authMiddleware } = require('../middlewares/AuthMiddleware');
 const UserController = require("../../../adapters/controllers/UserController");
-const UserRepository = require("../../../infrastructure/repositories/UserRepository");
+const UserRepository = require("../../repositories/UserRepository");
 
 const CreateUserHandler = require("../../../core/services/features/user/commands/CreateUserCommand/CreateUserHandler");
 const GetAuthenticatedUserHandler = require("../../../core/services/features/user/queries/GetAuthenticatedUserQuery/GetAuthenticatedUserHandler");
