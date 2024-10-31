@@ -1,16 +1,19 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useLocation } from "react-router-dom";
 import HomePage from "./pages/home/HomePage";
 import LoginPage from "./pages/auth/login/LoginPage";
-import SignUpPage from "./pages/auth/signup/signupPage";
+import SignUpPage from "./pages/auth/signup/SignupPage";
 import ProfilePage from "./pages/profile/ProfilePage";
 import Sidebar from "./components/common/Sidebar"; 
 import RightPanel from "./components/common/RightPanel";
 import NotificationPage from "./pages/notification/NotificationPage";
 
 function App() {
+  const location = useLocation();
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/signup';
+
   return (
     <div className='flex max-w-6xl mx-auto'>
-      <Sidebar /> 
+      {!isAuthPage && <Sidebar />} 
       <Routes>
         <Route path='/' element={<HomePage />} />
         <Route path='/login' element={<LoginPage />} />
@@ -18,7 +21,7 @@ function App() {
         <Route path='/notifications' element={<NotificationPage />} />
         <Route path='/profile' element={<ProfilePage />} />
       </Routes>
-      <RightPanel />
+      {!isAuthPage && <RightPanel />}
     </div>
   );
 }

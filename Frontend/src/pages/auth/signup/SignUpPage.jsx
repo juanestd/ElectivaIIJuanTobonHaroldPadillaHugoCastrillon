@@ -12,37 +12,40 @@ const RegisterPage = () => {
     const [isError, setIsError] = useState(false);
     const navigate = useNavigate();
 
-	const handleSubmit = async (e) => {
-		e.preventDefault();
-		console.log("Datos a enviar:", formData); 
-		try {
-			const response = await fetch('http://localhost:3000/api/auth/register', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(formData),
-			});
-			const data = await response.json();
-	
-			if (response.ok) {
-				navigate('/login'); 
-			} else {
-				console.error("Error del servidor:", data.errors); 
-				setIsError(true);
-			}
-		} catch (error) {
-			console.error("Error:", error);
-			setIsError(true);
-		}
-	};
-	
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        console.log("Datos a enviar:", formData); 
+        try {
+            const response = await fetch('http://localhost:3000/api/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
+            const data = await response.json();
+
+            if (response.ok) {
+                navigate('/login'); 
+            } else {
+                console.error("Error del servidor:", data.errors); 
+                setIsError(true);
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            setIsError(true);
+        }
+    };
+
     const handleInputChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
     return (
         <div className='max-w-screen-xl mx-auto flex h-screen'>
+            <div className='flex-1 hidden lg:flex items-center justify-center'>
+                <XSvg className='lg:w-2/3 fill-white' />
+            </div>
             <div className='flex-1 flex flex-col justify-center items-center'>
                 <form className='flex gap-4 flex-col' onSubmit={handleSubmit}>
                     <XSvg className='w-24 lg:hidden fill-white' />
