@@ -28,6 +28,8 @@ const LoginPage = () => {
 
             if (response.ok) {
                 localStorage.setItem('token', data.token); 
+                localStorage.setItem('username', data.user.username); 
+                localStorage.setItem('name', data.user.name); 
                 navigate('/'); 
             } else {
                 setIsError(true);

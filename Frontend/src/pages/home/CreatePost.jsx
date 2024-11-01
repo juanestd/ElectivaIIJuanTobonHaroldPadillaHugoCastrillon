@@ -16,9 +16,33 @@ const CreatePost = () => {
 		profileImg: "/avatars/boy1.png",
 	};
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
-		alert("Post created successfully");
+		console.log({ e })
+
+		try {
+			const tweet = {
+				"message": e.target[0].value
+			}
+			const response = await fetch('http://localhost:3000/api/tweets', {
+				method: 'POST',
+				headers: {
+					Accept: "application/json",
+					"Content-Type": "application/json",
+					Authorization: "Bearer " + localStorage.getItem("token"),
+				},
+				body: JSON.stringify(tweet),
+			});
+			const data = await response.json();
+
+			if (response.ok) {
+				alert("Post created successfully");
+				location.reload();
+			}
+		} catch {
+			alert("ERROR");
+		}
+
 	};
 
 	const handleImgChange = (e) => {
@@ -45,6 +69,7 @@ const CreatePost = () => {
 					placeholder='What is happening?!'
 					value={text}
 					onChange={(e) => setText(e.target.value)}
+					maxLength={280}
 				/>
 				{img && (
 					<div className='relative w-72 mx-auto'>
