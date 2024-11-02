@@ -1,5 +1,6 @@
 class GetFollowingQuery {
-    constructor(username, page, limit) {
+    constructor(myUserId, username, page, limit) {
+        this.myUserId = myUserId;
         this.username = username;
         this.page = page;
         this.limit = limit;

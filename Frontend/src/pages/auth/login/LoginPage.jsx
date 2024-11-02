@@ -27,6 +27,9 @@ const LoginPage = () => {
             const data = await response.json();
 
             if (response.ok) {
+                localStorage.removeItem("token");
+                localStorage.removeItem("username");
+                localStorage.removeItem("name");
                 localStorage.setItem('token', data.token); 
                 localStorage.setItem('username', data.user.username); 
                 localStorage.setItem('name', data.user.name); 

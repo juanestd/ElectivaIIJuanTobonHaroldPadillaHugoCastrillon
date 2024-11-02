@@ -3,9 +3,9 @@ import HomePage from "./pages/home/HomePage";
 import LoginPage from "./pages/auth/login/LoginPage";
 import SignUpPage from "./pages/auth/signup/SignupPage";
 import ProfilePage from "./pages/profile/ProfilePage";
-import Sidebar from "./components/common/Sidebar"; 
+import Sidebar from "./components/common/Sidebar";
 import RightPanel from "./components/common/RightPanel";
-import NotificationPage from "./pages/notification/NotificationPage";
+import ProtectedRoute from "./utils/protectedRoute";
 
 function App() {
   const location = useLocation();
@@ -13,13 +13,15 @@ function App() {
 
   return (
     <div className='flex max-w-6xl mx-auto'>
-      {!isAuthPage && <Sidebar />} 
+      {!isAuthPage && <Sidebar />}
       <Routes>
-        <Route path='/' element={<HomePage />} />
+        {/* Rutas Publicas */}
         <Route path='/login' element={<LoginPage />} />
         <Route path='/signup' element={<SignUpPage />} />
-        <Route path='/notifications' element={<NotificationPage />} />
-        <Route path='/:username' element={<ProfilePage />} />
+
+        {/* Rutas Protegidas */}
+        <Route path='/' element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
+        <Route path='/:username' element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
       </Routes>
       {!isAuthPage && <RightPanel />}
     </div>

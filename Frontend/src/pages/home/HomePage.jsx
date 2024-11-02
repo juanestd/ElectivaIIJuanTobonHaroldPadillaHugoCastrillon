@@ -1,32 +1,58 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Post from "../../components/common/PostCard";
 import CreatePost from "../home/CreatePost";
-import headerFactory from '../../utils/headerFactory';
+import fetchWithAuth from "../../utils/fetchWithAuth";
 
 const HomePage = () => {
   const [feedType, setFeedType] = useState("forYou");
-  const [loading, setLoading] = useState(true);
   const [tweets, setTweets] = useState([]);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const observer = useRef();
 
-  const headerApi = headerFactory;
+
+  const fetchTweets = useCallback(async (pageNum) => {
+    if (!hasMore || loading) return;
+    
+    setLoading(true);
+    try {
+      const data = await fetchWithAuth(`http://localhost:3000/api/feed?page=${pageNum}&limit=10`, { method: "GET" });
+
+      const sortedTweets = data.tweets.sort(
+        (a, b) => new Date(b.createdDate) - new Date(a.createdDate)
+      );
+      setTweets((prevTweets) => pageNum === 1 ? sortedTweets : [ ...prevTweets, ...sortedTweets]);
+      setHasMore(pageNum < data.totalPages);
+    } catch (error) {
+      setHasMore(false);
+    } finally {
+      setLoading(false);
+    }
+  }, [loading, hasMore]);
 
   useEffect(() => {
-    async function fetchData() {
-      if (feedType) {
-        const response = await fetch(
-          "http://localhost:3000/api/feed?page=1&limit=10000", { method: "GET", headers: headerApi }
-        );
-        const data = await response.json()
+    fetchTweets(page);
+  }, [page]);
 
-        if (response.ok) {
-          setTweets(data.tweets);
+  const lasTweetRef = useCallback(
+    (node) => {
+      if (loading || !hasMore) return;
+      if (observer.current) observer.current.disconnect();
+      
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore && !loading) {
+          setPage((prevPage) => prevPage + 1);
         }
-        setLoading(false);
-        return;
-      }
-    }
-    fetchData();
-  }, [feedType]);
+      });
+
+      if (node) observer.current.observe(node);
+    }, [loading, hasMore]
+  );
+
+  const handleDeletePost = (tweetId) => {
+    setTweets((prevTweets) => prevTweets.filter((t) => t.id !== tweetId));
+  }
 
   return (
     <div className="flex flex-1 min-h-screen">
@@ -55,15 +81,13 @@ const HomePage = () => {
         <CreatePost />
 
         {/* POSTS */}
-        {loading ? (
-          <div>Cargando...</div>
-        ) : (
-          tweets && !loading && tweets.map((tweet, index) => (<Post key={index} post={tweet} />))
-        )}
-
-        {!tweets?.length && !loading && (
-          <div>No hay tweets por ver.</div>
-        )}
+        {tweets.map((tweet, index) => (
+          <div ref={index === tweets.length - 1 ? lasTweetRef : null} key={tweet.id}>
+            <Post post={tweet} onDelete={handleDeletePost} />
+          </div>
+        ))}
+        {loading && (<div className="p-4">Loading...</div>)}
+        {!tweets?.length && !loading && (<div className="p-4">No tweets available.</div>)}
       </div>
     </div>
   );

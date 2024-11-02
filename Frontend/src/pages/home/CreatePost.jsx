@@ -2,6 +2,7 @@ import { CiImageOn } from "react-icons/ci";
 import { BsEmojiSmileFill } from "react-icons/bs";
 import { useRef, useState } from "react";
 import { IoCloseSharp } from "react-icons/io5";
+import fetchWithAuth from "../../utils/fetchWithAuth";
 
 const CreatePost = () => {
 	const [text, setText] = useState("");
@@ -24,21 +25,13 @@ const CreatePost = () => {
 			const tweet = {
 				"message": e.target[0].value
 			}
-			const response = await fetch('http://localhost:3000/api/tweets', {
+			await fetchWithAuth('http://localhost:3000/api/tweets', {
 				method: 'POST',
-				headers: {
-					Accept: "application/json",
-					"Content-Type": "application/json",
-					Authorization: "Bearer " + localStorage.getItem("token"),
-				},
 				body: JSON.stringify(tweet),
 			});
-			const data = await response.json();
 
-			if (response.ok) {
-				alert("Post created successfully");
-				location.reload();
-			}
+			alert("Post created successfully");
+			location.reload();
 		} catch {
 			alert("ERROR");
 		}

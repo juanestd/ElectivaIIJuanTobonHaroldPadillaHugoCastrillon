@@ -10,7 +10,7 @@ class GetFollowingHandler {
             throw new Error('User not found');
         }
 
-        return await this.followRepository.getFollowing(user.id, query.page, query.limit);
+        return await this.followRepository.getFollowing(query.myUserId, user.id, query.page, query.limit);
     }
 }
 

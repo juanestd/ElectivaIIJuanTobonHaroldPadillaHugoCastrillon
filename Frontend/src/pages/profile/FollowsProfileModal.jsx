@@ -1,61 +1,68 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import headerFactory from '../../utils/headerFactory';
+import { Link, useParams, useNavigate } from "react-router-dom";
+import fetchWithAuth from "../../utils/fetchWithAuth";
+import RightPanelSkeleton from "../../components/skeletons/RightPanelSkeleton";
 
 const FollowsProfileModal = (props) => {
 
 	const { username } = useParams();
-	const headerApi = headerFactory;
+	const navigate = useNavigate();
 
-
-	const [formData, setFormData] = useState({
-		fullName: "",
-		username: "",
-		email: "",
-		bio: "",
-		link: "",
-		newPassword: "",
-		currentPassword: "",
-	});
-
-	const handleInputChange = (e) => {
-		setFormData({ ...formData, [e.target.name]: e.target.value });
-	};
-
+	const [isLoading, setIsLoading] = useState(true);
 	const [following, setFollowing] = useState([]);
 	const [followers, setFollowers] = useState([]);
+
 	useEffect(() => {
 		async function fetchFollowers() {
-			const response = await fetch(
-				`http://localhost:3000/api/${username}/followers?page=1&limit=10`,
-				{ method: "GET", headers: headerApi }
-			);
-			const data = await response.json()
-
-			if (response.ok) {
-				setFollowers(data.followers);
+			try {
+				const data = await fetchWithAuth(
+					`http://localhost:3000/api/${username}/followers?page=1&limit=10`,
+					{ method: "GET" }
+				);
+				const sortedFollowers = data.followers.sort((a, b) => a.name.localeCompare(b.name));
+				setFollowers(sortedFollowers);
+			} catch (error) {
+				setFollowers([]);
 			}
-			return;
-
 		}
 		async function fetchFollowing() {
-			const response = await fetch(
-				`http://localhost:3000/api/${username}/following?page=1&limit=10`,
-				{ method: "GET", headers: headerApi }
-			);
-			const data = await response.json()
-
-			if (response.ok) {
-				setFollowing(data.following);
+			try {
+				const data = await fetchWithAuth(
+					`http://localhost:3000/api/${username}/following?page=1&limit=10`,
+					{ method: "GET" }
+				);
+				const sortedFollowing = data.following.sort((a, b) => a.name.localeCompare(b.name));
+				setFollowing(sortedFollowing);
+				setIsLoading(false);
+			} catch (error) {
+				setFollowing([]);
 			}
-			return;
 		}
-		if(username){
+		if (username) {
+			setIsLoading(true);
 			fetchFollowers();
 			fetchFollowing();
 		}
 
 	}, [username]);
+
+	const isMyProfile = (username) => {
+		return username === localStorage.getItem('username')
+	}
+
+	const handleFollowUser = async (userToFollow) => {
+		try {
+			await fetchWithAuth(`http://localhost:3000/api/${userToFollow.username}/follow`, { method: 'POST' });
+
+			document.getElementById("follows_profile_modal").close()
+			navigate(`/${userToFollow.username}`);
+			alert(`You are now following ${userToFollow.name}`);
+		} catch (error) {
+			console.error("Error:", error);
+			document.getElementById("follows_profile_modal").close()
+			alert("Network Error, please try again");
+		}
+	}
 
 	return (
 		<>
@@ -71,61 +78,78 @@ const FollowsProfileModal = (props) => {
 			</div>
 
 			<dialog id='follows_profile_modal' className='modal'>
-				<div className='modal-box border rounded-md border-gray-700 shadow-md'>
-					<div className="columns-2">
-						<div>
+				<div className='modal-box border rounded-md border-gray-700 shadow-md p-4'>
+					<div className="flex columns-2 justify-between">
+						<div className="border-box mb-4">
 							<div className='flex flex-wrap gap-2'>
 								<h3 className='font-bold text-lg my-3'>Following</h3>
 							</div>
-
-							{following && following.map((follower, index) => (
-								<div key={index} className='flex gap-2 items-center p-2'>
-									<div className='avatar'>
-										<Link to={`/${follower.username}`} className='w-8 rounded-full overflow-hidden'>
-											<img src={'' || "/avatar-placeholder.png"} alt={''} />
-										</Link>
-									</div>
-									<div className='flex flex-col flex-1'>
-										<div className='flex justify-between'>
-											<div className='flex flex-col'>
-												<Link to={`/${follower.username}`} className='font-semibold hover:underline whitespace-nowrap'>{follower.name}</Link>
-												<p className='text-sm text-slate-500'>@{follower.username}</p>
+							{isLoading && (
+								<>
+									<RightPanelSkeleton />
+									<RightPanelSkeleton />
+								</>
+							)}
+							{!isLoading && following?.map((follower) => (
+								<Link to={`/${follower.username}`} onClick={() => document.getElementById("follows_profile_modal").close()} className='flex items-center justify-between gap-1 mb-2' key={follower.username}>
+									<div className='flex gap-2 items-center'>
+										<div className='avatar'>
+											<div className='w-8 rounded-full overflow-hidden'>
+												<img src={'' || "/avatar-placeholder.png"} alt={follower.name} />
 											</div>
 										</div>
+										<div className='flex flex-col'>
+											<span className='font-semibold tracking-tight truncate w-28 text-white'>{follower.name}</span>
+											<span className='text-sm text-slate-500'>@{follower.username}</span>
+										</div>
 									</div>
-								</div>
+									{!follower.following && !isMyProfile(follower.username) && (
+										<div>
+											<button
+												className='btn bg-white text-black hover:bg-white hover:opacity-90 rounded-full btn-sm'
+												onClick={() => handleFollowUser(follower)}
+											>
+												Follow
+											</button>
+										</div>
+									)}
+								</Link>
 							))}
 						</div>
-						<div>
+						<div className="border-box mb-4">
 							<div className='flex flex-wrap gap-2'>
 								<h3 className='font-bold text-lg my-3'>Followers</h3>
 							</div>
-
-							{followers && followers.map((follower, index) => (
-								<div key={index} className='flex gap-2 items-center p-2'>
-									<div className='avatar'>
-										<Link to={`/${follower.username}`} className='w-8 rounded-full overflow-hidden'>
-											<img src={'' || "/avatar-placeholder.png"} alt={''} />
-										</Link>
-									</div>
-									<div className='flex flex-col flex-1'>
-										<div className='flex justify-between items-center'>
-											<div className='flex flex-col'>
-												<Link to={`/${follower.username}`} className='font-semibold hover:underline whitespace-nowrap'>{follower.name}</Link>
-												<p className='text-sm text-slate-500'>@{follower.username}</p>
+							{isLoading && (
+								<>
+									<RightPanelSkeleton />
+									<RightPanelSkeleton />
+								</>
+							)}
+							{!isLoading && followers?.map((follower) => (
+								<Link to={`/${follower.username}`} onClick={() => document.getElementById("follows_profile_modal").close()} className='flex items-center justify-between gap-1 mb-2' key={follower.username}>
+									<div className='flex gap-2 items-center'>
+										<div className='avatar'>
+											<div className='w-8 rounded-full overflow-hidden'>
+												<img src={'' || "/avatar-placeholder.png"} alt={follower.name} />
 											</div>
-											{!follower.following && (
-												<div className='flex justify-end px-4'>
-													<button
-														className='btn btn-outline rounded-full btn-sm'
-														onClick={() => alert("Followed successfully")} >
-														Follow
-													</button>
-												</div>
-											)}
+										</div>
+										<div className='flex flex-col'>
+											<span className='font-semibold tracking-tight truncate w-28 text-white'>{follower.name}</span>
+											<span className='text-sm text-slate-500'>@{follower.username}</span>
 										</div>
 									</div>
-								</div>
+									{!follower.following && !isMyProfile(follower.username) && (
+										<div>
+											<button
+												className='btn bg-white text-black hover:bg-white hover:opacity-90 rounded-full btn-sm'
+												onClick={() => handleFollowUser(follower)}
+											>
+												Follow
+											</button>
+										</div>
+									)}
+								</Link>
 							))}
 						</div>
 					</div>

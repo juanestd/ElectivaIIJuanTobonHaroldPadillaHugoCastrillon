@@ -6,7 +6,7 @@ const Post = ({ post }) => {
 	const [comment, setComment] = useState("");
 
 	if (!post || !post.user) {
-		return <div>Cargando...</div>; 
+		return <div className="p-4">Loading...</div>; 
 	}
 
 	const postOwner = post.user;
@@ -24,14 +24,14 @@ const Post = ({ post }) => {
 	return (
 		<div className='flex gap-2 items-start p-4 border-b border-gray-700'>
 			<div className='avatar'>
-				<Link to={`/profile/${postOwner.username}`} className='w-8 rounded-full overflow-hidden'>
+				<Link to={`/${postOwner.username}`} className='w-8 rounded-full overflow-hidden'>
 					<img src={postOwner.profileImg || "/avatar-placeholder.png"} alt={postOwner.fullName} />
 				</Link>
 			</div>
 			<div className='flex flex-col flex-1'>
 				<div className='flex justify-between'>
 					<div className='flex flex-col'>
-						<Link to={`/profile/${postOwner.username}`} className='font-semibold hover:underline'>{postOwner.fullName}</Link>
+						<Link to={`/${postOwner.username}`} className='font-semibold hover:underline'>{postOwner.fullName}</Link>
 						<p className='text-sm text-slate-500'>@{postOwner.username} • {formattedDate}</p>
 					</div>
 					<button onClick={handleDeletePost} className='text-red-500 hover:text-red-700'>
