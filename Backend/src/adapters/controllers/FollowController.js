@@ -261,9 +261,10 @@ class FollowController {
     async getFollowing(req, res) {
         try {
             const { username } = req.params;
+            const myUserId = req.user.id;
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 10;
-            const query = new GetFollowingQuery(username, page, limit);
+            const query = new GetFollowingQuery(myUserId, username, page, limit);
             const following = await this.getFollowingHandler.handle(query);
             res.status(200).json( following );
         } catch (error) {

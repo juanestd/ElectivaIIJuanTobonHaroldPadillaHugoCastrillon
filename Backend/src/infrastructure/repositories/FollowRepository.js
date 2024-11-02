@@ -47,9 +47,10 @@ class FollowRepository {
         }
     }    
 
-    async getFollowing(userId, page = 1, limit = 10) {
+    async getFollowing(myUserId, userId, page = 1, limit = 10) {
         try {
             const skip = (page - 1) * limit;
+            const followingUserIds = await this.getFollowingUserIds(myUserId);
     
             const following = await FollowModel.find({ follower: userId })
                 .populate('following', 'name username')
@@ -62,7 +63,8 @@ class FollowRepository {
             return {
                 following: following.map(f => ({
                     name: f.following.name,
-                    username: f.following.username
+                    username: f.following.username,
+                    following: followingUserIds.some(followingId => followingId.toString() === f.following._id.toString())
                 })),
                 page,
                 limit,

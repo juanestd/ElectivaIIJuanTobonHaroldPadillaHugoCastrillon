@@ -1,4 +1,5 @@
 const TweetMapper = require('../../../../mapping/TweetMapper');
+const UserMapper = require('../../../../mapping/UserMapper');
 
 class GetTweetsByUsernameHandler {
     constructor(userRepository, tweetRepository, followRepository) {
@@ -21,6 +22,7 @@ class GetTweetsByUsernameHandler {
         result.tweets = result.tweets.map(tweet => TweetMapper.toClient(tweet));
         return {
             isUserFollowing,
+            ...{userData: UserMapper.toClient(user)},
             ...result
         };
     }
