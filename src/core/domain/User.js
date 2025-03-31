@@ -1,4 +1,4 @@
-const BaseDomainModel = require('./common/baseDomainModel');
+const BaseDomainModel = require('./common/BaseDomainModel');
 
 class User extends BaseDomainModel {
     constructor

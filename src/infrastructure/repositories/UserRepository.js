@@ -1,4 +1,4 @@
-const { UserModel } = require('../database/models/userModel');
+const { UserModel } = require('../database/models/UserModel');
 const UserMapper = require('../../core/services/mapping/UserMapper');
 
 class UserRepository {

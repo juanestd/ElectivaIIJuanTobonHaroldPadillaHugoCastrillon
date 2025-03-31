@@ -1,4 +1,4 @@
-const BaseDomainModel = require('./common/baseDomainModel');
+const BaseDomainModel = require('./common/BaseDomainModel');
 
 class Follow extends BaseDomainModel {
     constructor({ id, createdDate, createdBy, lastModifiedDate, lastModifiedBy, follower, following }) {
